@@ -27,14 +27,24 @@ COIN_ALIASES = {
     "polygon": "matic-network", "matic": "matic-network",
 }
 
+MENU_KEYBOARD = {
+    "keyboard": [
+        [{"text": "➕ افزودن آلارم"}],
+        [{"text": "📋 لیست آلارم‌ها"}],
+        [{"text": "🗑 حذف آلارم"}],
+    ],
+    "resize_keyboard": True,
+}
+
 
 def load_state():
     if not os.path.exists(STATE_FILE):
-        return {"last_update_id": 0, "alerts": {}}
+        return {"last_update_id": 0, "alerts": {}, "mode": None}
     with open(STATE_FILE, "r", encoding="utf-8") as f:
         data = json.load(f)
-    if "alerts" not in data:
-        data = {"last_update_id": data.get("last_update_id", 0), "alerts": {}}
+    data.setdefault("alerts", {})
+    data.setdefault("mode", None)
+    data.setdefault("last_update_id", 0)
     return data
 
 
@@ -53,12 +63,15 @@ def get_prices(coin_ids):
     return r.json()
 
 
-def send_bale_message(text):
+def send_bale_message(text, with_menu=True):
     if not BALE_BOT_TOKEN or not BALE_CHAT_ID:
         return
     url = f"https://tapi.bale.ai/bot{BALE_BOT_TOKEN}/sendMessage"
+    payload = {"chat_id": BALE_CHAT_ID, "text": text}
+    if with_menu:
+        payload["reply_markup"] = MENU_KEYBOARD
     try:
-        r = requests.post(url, json={"chat_id": BALE_CHAT_ID, "text": text}, timeout=15)
+        r = requests.post(url, json=payload, timeout=15)
         print("Bale send:", r.status_code, r.text)
     except Exception as e:
         print("Error sending Bale message:", e)
@@ -106,6 +119,33 @@ def parse_alert_command(text):
     return coin_id, price
 
 
+def list_alerts_text(state):
+    alerts = state.get("alerts", {})
+    if not alerts:
+        return "هیچ آلارم فعالی ندارید."
+    lines = ["📋 آلارم‌های فعال:"]
+    for aid, a in alerts.items():
+        status = "✅ ارسال شده" if a["triggered"] else "⏳ در انتظار"
+        arrow = "بالای" if a["direction"] == "above" else "زیر"
+        lines.append(f"{a['coin']} {arrow} {a['price']} — {status}")
+    return "\n".join(lines)
+
+
+def add_alert(state, coin_id, target_price):
+    prices = get_prices([coin_id])
+    if coin_id not in prices:
+        return f"قیمت {coin_id} پیدا نشد."
+    current_price = prices[coin_id]["usd"]
+    direction = "above" if target_price >= current_price else "below"
+    alert_id = f"{coin_id}_{direction}_{format_price(target_price)}"
+    state["alerts"][alert_id] = {
+        "coin": coin_id, "direction": direction,
+        "price": target_price, "triggered": False,
+    }
+    arrow = "بالاتر رفت از" if direction == "above" else "پایین‌تر آمد از"
+    return f"✅ آلارم ثبت شد\n{coin_id}: وقتی قیمت {arrow} {format_price(target_price)} دلار\n(قیمت فعلی: {current_price})"
+
+
 def process_commands(state):
     updates = get_bale_updates(state.get("last_update_id", 0))
     for update in updates:
@@ -115,51 +155,54 @@ def process_commands(state):
             continue
         text = message["text"].strip()
 
-        if text.lower() in ("list", "لیست"):
-            alerts = state.get("alerts", {})
-            if not alerts:
-                send_bale_message("هیچ آلارم فعالی ندارید.")
-            else:
-                lines = ["📋 آلارم‌های فعال:"]
-                for aid, a in alerts.items():
-                    status = "✅ ارسال شده" if a["triggered"] else "⏳ در انتظار"
-                    arrow = "بالای" if a["direction"] == "above" else "زیر"
-                    lines.append(f"{a['coin']} {arrow} {a['price']} — {status}")
-                send_bale_message("\n".join(lines))
+        # دستور شروع -> نمایش منو
+        if text.lower() in ("شروع", "start", "/start", "منو"):
+            state["mode"] = None
+            send_bale_message("سلام 👋 از دکمه‌های پایین استفاده کنید:")
             continue
 
-        if text.lower().startswith("remove "):
-            target = text.split(" ", 1)[1].strip()
+        # دکمه‌ی افزودن آلارم
+        if text == "➕ افزودن آلارم":
+            state["mode"] = "awaiting_add"
+            send_bale_message("اسم ارز و قیمت رو بفرستید.\nمثال: bitcoin 70000")
+            continue
+
+        # دکمه‌ی لیست
+        if text == "📋 لیست آلارم‌ها":
+            state["mode"] = None
+            send_bale_message(list_alerts_text(state))
+            continue
+
+        # دکمه‌ی حذف
+        if text == "🗑 حذف آلارم":
+            alerts = state.get("alerts", {})
+            if not alerts:
+                state["mode"] = None
+                send_bale_message("هیچ آلارمی برای حذف وجود نداره.")
+            else:
+                state["mode"] = "awaiting_delete"
+                send_bale_message(list_alerts_text(state) + "\n\nاسم ارزی که می‌خواید حذف بشه رو بفرستید:")
+            continue
+
+        # اگه منتظر دریافت اطلاعات حذف بودیم
+        if state.get("mode") == "awaiting_delete":
+            target = text.strip().lower()
             removed = [k for k in state.get("alerts", {}) if k.startswith(target)]
             for k in removed:
                 del state["alerts"][k]
-            send_bale_message("حذف شد." if removed else "پیدا نشد.")
+            state["mode"] = None
+            send_bale_message("✅ حذف شد." if removed else "پیدا نشد، دوباره امتحان کنید.")
             continue
 
+        # اگه منتظر دریافت اطلاعات افزودن بودیم (یا مستقیم فرمت درست فرستاده)
         parsed = parse_alert_command(text)
         if parsed is None:
-            send_bale_message("متوجه نشدم 🙁\nفرمت درست: اسم‌ارز قیمت\nمثال: bitcoin 70000")
+            send_bale_message("متوجه نشدم 🙁\nاز دکمه‌ها استفاده کنید یا فرمت: اسم‌ارز قیمت\nمثال: bitcoin 70000")
             continue
 
         coin_id, target_price = parsed
-        prices = get_prices([coin_id])
-        if coin_id not in prices:
-            send_bale_message(f"قیمت {coin_id} پیدا نشد.")
-            continue
-
-        current_price = prices[coin_id]["usd"]
-        direction = "above" if target_price >= current_price else "below"
-        alert_id = f"{coin_id}_{direction}_{format_price(target_price)}"
-
-        state.setdefault("alerts", {})[alert_id] = {
-            "coin": coin_id, "direction": direction,
-            "price": target_price, "triggered": False,
-        }
-        arrow = "بالاتر رفت از" if direction == "above" else "پایین‌تر آمد از"
-        send_bale_message(
-            f"✅ آلارم ثبت شد\n{coin_id}: وقتی قیمت {arrow} {format_price(target_price)} دلار\n"
-            f"(قیمت فعلی: {current_price})"
-        )
+        state["mode"] = None
+        send_bale_message(add_alert(state, coin_id, target_price))
 
 
 def check_alerts(state):
