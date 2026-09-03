@@ -183,4 +183,68 @@ def process_commands(state):
             else:
                 state["mode"] = "awaiting_delete"
                 state["delete_order"] = ordered_ids
-                send_bale_message(list_text + "\n\nشماره‌ی آلارمی که می‌خواید
+                send_bale_message(list_text + "\n\nشماره‌ی آلارمی که می‌خواید حذف بشه رو بفرستید:")
+            continue
+
+        if state.get("mode") == "awaiting_delete":
+            ordered_ids = state.get("delete_order", [])
+            choice = text.strip()
+            if choice.isdigit() and 1 <= int(choice) <= len(ordered_ids):
+                target_id = ordered_ids[int(choice) - 1]
+                if target_id in state.get("alerts", {}):
+                    del state["alerts"][target_id]
+                    send_bale_message("✅ آلارم حذف شد.")
+                else:
+                    send_bale_message("این آلارم قبلاً حذف شده بود.")
+                state["mode"] = None
+                state["delete_order"] = []
+            else:
+                send_bale_message("لطفاً فقط شماره‌ی آلارم رو بفرستید (مثلاً: 1)")
+            continue
+
+        parsed = parse_alert_command(text)
+        if parsed is None:
+            send_bale_message("متوجه نشدم 🙁\nاز دکمه‌ها استفاده کنید یا فرمت: اسم‌ارز قیمت\nمثال: bitcoin 70000")
+            continue
+
+        coin_id, target_price = parsed
+        state["mode"] = None
+        send_bale_message(add_alert(state, coin_id, target_price))
+
+
+def check_alerts(state):
+    alerts = state.get("alerts", {})
+    if not alerts:
+        return
+    coin_ids = list({a["coin"] for a in alerts.values()})
+    prices = get_prices(coin_ids)
+
+    for alert in alerts.values():
+        if alert["triggered"]:
+            continue
+        coin_id = alert["coin"]
+        if coin_id not in prices:
+            continue
+        current_price = prices[coin_id]["usd"]
+        direction, target_price = alert["direction"], alert["price"]
+        triggered = (
+            (direction == "above" and current_price >= target_price) or
+            (direction == "below" and current_price <= target_price)
+        )
+        if triggered:
+            arrow = "بالاتر رفت از" if direction == "above" else "پایین‌تر آمد از"
+            message = f"🔔 آلارم قیمت\nارز: {coin_id}\nقیمت فعلی: {current_price}\nقیمت {arrow} {target_price}"
+            send_bale_message(message)
+            send_ntfy_message(message)
+            alert["triggered"] = True
+
+
+def main():
+    state = load_state()
+    process_commands(state)
+    check_alerts(state)
+    save_state(state)
+
+
+if __name__ == "__main__":
+    main()
