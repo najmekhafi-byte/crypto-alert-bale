@@ -119,16 +119,19 @@ def parse_alert_command(text):
     return coin_id, price
 
 
-def list_alerts_text(state):
+def numbered_alerts_list(state):
+    """Returns (text, ordered_list_of_ids) - numbered 1,2,3..."""
     alerts = state.get("alerts", {})
     if not alerts:
-        return "هیچ آلارم فعالی ندارید."
+        return "هیچ آلارم فعالی ندارید.", []
+    ordered_ids = list(alerts.keys())
     lines = ["📋 آلارم‌های فعال:"]
-    for aid, a in alerts.items():
+    for i, aid in enumerate(ordered_ids, start=1):
+        a = alerts[aid]
         status = "✅ ارسال شده" if a["triggered"] else "⏳ در انتظار"
         arrow = "بالای" if a["direction"] == "above" else "زیر"
-        lines.append(f"{a['coin']} {arrow} {a['price']} — {status}")
-    return "\n".join(lines)
+        lines.append(f"{i}. {a['coin']} {arrow} {a['price']} — {status}")
+    return "\n".join(lines), ordered_ids
 
 
 def add_alert(state, coin_id, target_price):
@@ -155,46 +158,49 @@ def process_commands(state):
             continue
         text = message["text"].strip()
 
-        # دستور شروع -> نمایش منو
         if text.lower() in ("شروع", "start", "/start", "منو"):
             state["mode"] = None
             send_bale_message("سلام 👋 از دکمه‌های پایین استفاده کنید:")
             continue
 
-        # دکمه‌ی افزودن آلارم
         if text == "➕ افزودن آلارم":
             state["mode"] = "awaiting_add"
             send_bale_message("اسم ارز و قیمت رو بفرستید.\nمثال: bitcoin 70000")
             continue
 
-        # دکمه‌ی لیست
         if text == "📋 لیست آلارم‌ها":
             state["mode"] = None
-            send_bale_message(list_alerts_text(state))
+            list_text, _ = numbered_alerts_list(state)
+            send_bale_message(list_text)
             continue
 
-        # دکمه‌ی حذف
         if text == "🗑 حذف آلارم":
-            alerts = state.get("alerts", {})
-            if not alerts:
+            list_text, ordered_ids = numbered_alerts_list(state)
+            if not ordered_ids:
                 state["mode"] = None
                 send_bale_message("هیچ آلارمی برای حذف وجود نداره.")
             else:
                 state["mode"] = "awaiting_delete"
-                send_bale_message(list_alerts_text(state) + "\n\nاسم ارزی که می‌خواید حذف بشه رو بفرستید:")
+                state["delete_order"] = ordered_ids
+                send_bale_message(list_text + "\n\nشماره‌ی آلارمی که می‌خواید حذف بشه رو بفرستید:")
             continue
 
-        # اگه منتظر دریافت اطلاعات حذف بودیم
         if state.get("mode") == "awaiting_delete":
-            target = text.strip().lower()
-            removed = [k for k in state.get("alerts", {}) if k.startswith(target)]
-            for k in removed:
-                del state["alerts"][k]
-            state["mode"] = None
-            send_bale_message("✅ حذف شد." if removed else "پیدا نشد، دوباره امتحان کنید.")
+            ordered_ids = state.get("delete_order", [])
+            choice = text.strip()
+            if choice.isdigit() and 1 <= int(choice) <= len(ordered_ids):
+                target_id = ordered_ids[int(choice) - 1]
+                if target_id in state.get("alerts", {}):
+                    del state["alerts"][target_id]
+                    send_bale_message("✅ آلارم حذف شد.")
+                else:
+                    send_bale_message("این آلارم قبلاً حذف شده بود.")
+                state["mode"] = None
+                state["delete_order"] = []
+            else:
+                send_bale_message("لطفاً فقط شماره‌ی آلارم رو بفرستید (مثلاً: 1)")
             continue
 
-        # اگه منتظر دریافت اطلاعات افزودن بودیم (یا مستقیم فرمت درست فرستاده)
         parsed = parse_alert_command(text)
         if parsed is None:
             send_bale_message("متوجه نشدم 🙁\nاز دکمه‌ها استفاده کنید یا فرمت: اسم‌ارز قیمت\nمثال: bitcoin 70000")
