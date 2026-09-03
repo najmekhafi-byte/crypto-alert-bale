@@ -10,7 +10,7 @@
       "triggered": false
     }
   },
-  "mode": null,
-  "last_update_id": 50,
+  "mode": "awaiting_delete_all",
+  "last_update_id": 51,
   "delete_order": []
 }
