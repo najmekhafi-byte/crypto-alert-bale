@@ -1,3 +1,4 @@
+```python
 import json
 import os
 import requests
@@ -15,6 +16,15 @@ MENU_KEYBOARD = {
         [{"text": "📋 لیست آلارم‌ها"}],
         [{"text": "🗑 حذف آلارم"}],
         [{"text": "🗑 حذف همه آلارم‌ها"}],
+    ],
+    "resize_keyboard": True,
+}
+
+
+DELETE_ALL_KEYBOARD = {
+    "keyboard": [
+        [{"text": "✅ بله، حذف همه"}],
+        [{"text": "❌ انصراف"}],
     ],
     "resize_keyboard": True,
 }
@@ -235,13 +245,11 @@ def get_prices(symbols):
     ]
 
     # Stage 1: Binance Futures
-
     prices = get_binance_futures_prices(
         symbols
     )
 
     # Find missing symbols
-
     missing_symbols = [
         symbol
         for symbol in symbols
@@ -249,7 +257,6 @@ def get_prices(symbols):
     ]
 
     # Stage 2: CoinGecko fallback
-
     if missing_symbols:
 
         print(
@@ -282,7 +289,8 @@ def get_prices(symbols):
 
 def send_bale_message(
     text,
-    with_menu=True
+    with_menu=True,
+    custom_keyboard=None
 ):
     if not BALE_BOT_TOKEN or not BALE_CHAT_ID:
         return
@@ -297,10 +305,10 @@ def send_bale_message(
         "text": text
     }
 
-    if with_menu:
-        payload["reply_markup"] = (
-            MENU_KEYBOARD
-        )
+    if custom_keyboard is not None:
+        payload["reply_markup"] = custom_keyboard
+    elif with_menu:
+        payload["reply_markup"] = MENU_KEYBOARD
 
     try:
         r = requests.post(
@@ -555,10 +563,6 @@ def process_commands(state):
             "text"
         ].strip()
 
-        # ------------------------------------------
-        # Start / Menu
-        # ------------------------------------------
-
         if text.lower() in (
             "شروع",
             "start",
@@ -574,10 +578,6 @@ def process_commands(state):
 
             continue
 
-        # ------------------------------------------
-        # Add alert
-        # ------------------------------------------
-
         if text == "➕ افزودن آلارم":
 
             state["mode"] = (
@@ -590,10 +590,6 @@ def process_commands(state):
             )
 
             continue
-
-        # ------------------------------------------
-        # List alerts
-        # ------------------------------------------
 
         if text == "📋 لیست آلارم‌ها":
 
@@ -610,10 +606,6 @@ def process_commands(state):
             )
 
             continue
-
-        # ------------------------------------------
-        # Delete one alert
-        # ------------------------------------------
 
         if text == "🗑 حذف آلارم":
 
@@ -649,15 +641,13 @@ def process_commands(state):
 
             continue
 
-        # ------------------------------------------
+        # --------------------------------------------------
         # Delete all alerts
-        # ------------------------------------------
+        # --------------------------------------------------
 
         if text == "🗑 حذف همه آلارم‌ها":
 
-            if not state.get(
-                "alerts"
-            ):
+            if not state.get("alerts"):
 
                 state["mode"] = None
 
@@ -673,57 +663,30 @@ def process_commands(state):
 
                 send_bale_message(
                     "⚠️ مطمئن هستید که می‌خواهید "
-                    "همه آلارم‌ها حذف شوند؟\n\n"
-                    "برای تأیید بنویسید:\n"
-                    "✅ بله، حذف همه\n\n"
-                    "برای لغو بنویسید:\n"
-                    "❌ انصراف"
+                    "همه آلارم‌ها حذف شوند؟",
+                    with_menu=False,
+                    custom_keyboard=DELETE_ALL_KEYBOARD
                 )
 
             continue
-
-        # ------------------------------------------
-        # Confirm delete all
-        # ------------------------------------------
 
         if state.get(
             "mode"
         ) == "awaiting_delete_all":
 
-            if text in (
-                "✅ بله، حذف همه",
-                "بله",
-                "بله حذف همه",
-                "تایید",
-                "تأیید"
-            ):
-
-                count = len(
-                    state.get(
-                        "alerts",
-                        {}
-                    )
-                )
+            if text == "✅ بله، حذف همه":
 
                 state["alerts"] = {}
-
-                state["mode"] = None
-
                 state["delete_order"] = []
+                state["mode"] = None
 
                 send_bale_message(
-                    f"✅ همه آلارم‌ها حذف شدند.\n"
-                    f"تعداد آلارم‌های حذف‌شده: {count}"
+                    "✅ همه آلارم‌ها با موفقیت حذف شدند."
                 )
 
-            elif text in (
-                "❌ انصراف",
-                "انصراف",
-                "لغو"
-            ):
+            elif text == "❌ انصراف":
 
                 state["mode"] = None
-
                 state["delete_order"] = []
 
                 send_bale_message(
@@ -733,16 +696,12 @@ def process_commands(state):
             else:
 
                 send_bale_message(
-                    "لطفاً یکی از این دو گزینه را بفرستید:\n\n"
-                    "✅ بله، حذف همه\n"
-                    "❌ انصراف"
+                    "لطفاً یکی از دکمه‌های بالا را انتخاب کنید.",
+                    with_menu=False,
+                    custom_keyboard=DELETE_ALL_KEYBOARD
                 )
 
             continue
-
-        # ------------------------------------------
-        # Delete one - number selection
-        # ------------------------------------------
 
         if state.get(
             "mode"
@@ -799,10 +758,6 @@ def process_commands(state):
                 )
 
             continue
-
-        # ------------------------------------------
-        # Parse new alert
-        # ------------------------------------------
 
         parsed = parse_alert_command(
             text
@@ -944,4 +899,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-
+```
