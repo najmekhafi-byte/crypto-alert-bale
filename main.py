@@ -1,3 +1,4 @@
+```python
 import json
 import os
 import requests
@@ -9,23 +10,82 @@ NTFY_TOPIC = os.environ.get("NTFY_TOPIC")
 STATE_FILE = "state.json"
 
 COIN_ALIASES = {
-    "bitcoin": "bitcoin", "btc": "bitcoin", "بیتکوین": "bitcoin", "بیت کوین": "bitcoin",
-    "ethereum": "ethereum", "eth": "ethereum", "اتریوم": "ethereum",
-    "tether": "tether", "usdt": "tether", "تتر": "tether",
-    "binancecoin": "binancecoin", "bnb": "binancecoin",
-    "ripple": "ripple", "xrp": "ripple",
-    "cardano": "cardano", "ada": "cardano",
-    "solana": "solana", "sol": "solana",
-    "dogecoin": "dogecoin", "doge": "dogecoin", "دوج": "dogecoin",
-    "polkadot": "polkadot", "dot": "polkadot",
-    "litecoin": "litecoin", "ltc": "litecoin",
-    "tron": "tron", "trx": "tron",
-    "shiba-inu": "shiba-inu", "shib": "shiba-inu", "شیبا": "shiba-inu",
-    "toncoin": "the-open-network", "ton": "the-open-network",
-    "chainlink": "chainlink", "link": "chainlink",
-    "avalanche-2": "avalanche-2", "avax": "avalanche-2",
-    "polygon": "matic-network", "matic": "matic-network",
-    "gold": "tether-gold", "طلا": "tether-gold", "xauusdt": "tether-gold", "xaut": "tether-gold",
+    # نمادهای USDT
+    "btcusdt": "bitcoin",
+    "ethusdt": "ethereum",
+    "bnbusdt": "binancecoin",
+    "xrpusdt": "ripple",
+    "adausdt": "cardano",
+    "solusdt": "solana",
+    "dogeusdt": "dogecoin",
+    "dotusdt": "polkadot",
+    "ltcusdt": "litecoin",
+    "trxusdt": "tron",
+    "shibusdt": "shiba-inu",
+    "tonusdt": "the-open-network",
+    "linkusdt": "chainlink",
+    "avaxusdt": "avalanche-2",
+    "maticusdt": "matic-network",
+
+    # نام و نمادهای قبلی
+    "bitcoin": "bitcoin",
+    "btc": "bitcoin",
+    "بیتکوین": "bitcoin",
+    "بیت کوین": "bitcoin",
+
+    "ethereum": "ethereum",
+    "eth": "ethereum",
+    "اتریوم": "ethereum",
+
+    "tether": "tether",
+    "usdt": "tether",
+    "تتر": "tether",
+
+    "binancecoin": "binancecoin",
+    "bnb": "binancecoin",
+
+    "ripple": "ripple",
+    "xrp": "ripple",
+
+    "cardano": "cardano",
+    "ada": "cardano",
+
+    "solana": "solana",
+    "sol": "solana",
+
+    "dogecoin": "dogecoin",
+    "doge": "dogecoin",
+    "دوج": "dogecoin",
+
+    "polkadot": "polkadot",
+    "dot": "polkadot",
+
+    "litecoin": "litecoin",
+    "ltc": "litecoin",
+
+    "tron": "tron",
+    "trx": "tron",
+
+    "shiba-inu": "shiba-inu",
+    "shib": "shiba-inu",
+    "شیبا": "shiba-inu",
+
+    "toncoin": "the-open-network",
+    "ton": "the-open-network",
+
+    "chainlink": "chainlink",
+    "link": "chainlink",
+
+    "avalanche-2": "avalanche-2",
+    "avax": "avalanche-2",
+
+    "polygon": "matic-network",
+    "matic": "matic-network",
+
+    "gold": "tether-gold",
+    "طلا": "tether-gold",
+    "xauusdt": "tether-gold",
+    "xaut": "tether-gold",
 }
 
 MENU_KEYBOARD = {
@@ -83,7 +143,11 @@ def send_ntfy_message(text):
     if not NTFY_TOPIC:
         return
     try:
-        r = requests.post(f"https://ntfy.sh/{NTFY_TOPIC}", data=text.encode("utf-8"), timeout=15)
+        r = requests.post(
+            f"https://ntfy.sh/{NTFY_TOPIC}",
+            data=text.encode("utf-8"),
+            timeout=15
+        )
         print("ntfy send:", r.status_code)
     except Exception as e:
         print("Error sending ntfy message:", e)
@@ -109,142 +173,273 @@ def format_price(p):
 
 def parse_alert_command(text):
     parts = text.strip().split()
+
     if len(parts) != 2:
         return None
+
     coin_id = COIN_ALIASES.get(parts[0].strip().lower())
+
     if not coin_id:
         return None
+
     try:
         price = float(parts[1].replace(",", ""))
     except ValueError:
         return None
+
     return coin_id, price
 
 
 def numbered_alerts_list(state):
     alerts = state.get("alerts", {})
+
     if not alerts:
         return "هیچ آلارم فعالی ندارید.", []
+
     ordered_ids = list(alerts.keys())
+
     lines = ["📋 آلارم‌های فعال:"]
+
     for i, aid in enumerate(ordered_ids, start=1):
         a = alerts[aid]
+
         status = "✅ ارسال شده" if a["triggered"] else "⏳ در انتظار"
+
         arrow = "بالای" if a["direction"] == "above" else "زیر"
-        lines.append(f"{i}. {a['coin']} {arrow} {a['price']} — {status}")
+
+        lines.append(
+            f"{i}. {a['coin']} {arrow} {a['price']} — {status}"
+        )
+
     return "\n".join(lines), ordered_ids
 
 
 def add_alert(state, coin_id, target_price):
     prices = get_prices([coin_id])
+
     if coin_id not in prices:
         return f"قیمت {coin_id} پیدا نشد."
+
     current_price = prices[coin_id]["usd"]
-    direction = "above" if target_price >= current_price else "below"
+
+    direction = (
+        "above"
+        if target_price >= current_price
+        else "below"
+    )
+
     alert_id = f"{coin_id}_{direction}_{format_price(target_price)}"
+
     state["alerts"][alert_id] = {
-        "coin": coin_id, "direction": direction,
-        "price": target_price, "triggered": False,
+        "coin": coin_id,
+        "direction": direction,
+        "price": target_price,
+        "triggered": False,
     }
-    arrow = "بالاتر رفت از" if direction == "above" else "پایین‌تر آمد از"
-    return f"✅ آلارم ثبت شد\n{coin_id}: وقتی قیمت {arrow} {format_price(target_price)} دلار\n(قیمت فعلی: {current_price})"
+
+    arrow = (
+        "بالاتر رفت از"
+        if direction == "above"
+        else "پایین‌تر آمد از"
+    )
+
+    return (
+        f"✅ آلارم ثبت شد\n"
+        f"{coin_id}: وقتی قیمت {arrow} "
+        f"{format_price(target_price)} دلار\n"
+        f"(قیمت فعلی: {current_price})"
+    )
 
 
 def process_commands(state):
     updates = get_bale_updates(state.get("last_update_id", 0))
+
     for update in updates:
         state["last_update_id"] = update["update_id"]
+
         message = update.get("message")
+
         if not message or "text" not in message:
             continue
+
         text = message["text"].strip()
 
         if text.lower() in ("شروع", "start", "/start", "منو"):
             state["mode"] = None
-            send_bale_message("سلام 👋 از دکمه‌های پایین استفاده کنید:")
+
+            send_bale_message(
+                "سلام 👋 از دکمه‌های پایین استفاده کنید:"
+            )
+
             continue
 
         if text == "➕ افزودن آلارم":
             state["mode"] = "awaiting_add"
-            send_bale_message("اسم ارز و قیمت رو بفرستید.\nمثال: bitcoin 70000")
+
+            send_bale_message(
+                "نماد ارز و قیمت رو بفرستید.\n"
+                "مثال: BTCUSDT 70000"
+            )
+
             continue
 
         if text == "📋 لیست آلارم‌ها":
             state["mode"] = None
+
             list_text, _ = numbered_alerts_list(state)
+
             send_bale_message(list_text)
+
             continue
 
         if text == "🗑 حذف آلارم":
             list_text, ordered_ids = numbered_alerts_list(state)
+
             if not ordered_ids:
                 state["mode"] = None
-                send_bale_message("هیچ آلارمی برای حذف وجود نداره.")
+
+                send_bale_message(
+                    "هیچ آلارمی برای حذف وجود نداره."
+                )
+
             else:
                 state["mode"] = "awaiting_delete"
+
                 state["delete_order"] = ordered_ids
-                send_bale_message(list_text + "\n\nشماره‌ی آلارمی که می‌خواید حذف بشه رو بفرستید:")
+
+                send_bale_message(
+                    list_text +
+                    "\n\nشماره‌ی آلارمی که می‌خواید حذف بشه رو بفرستید:"
+                )
+
             continue
 
         if state.get("mode") == "awaiting_delete":
             ordered_ids = state.get("delete_order", [])
+
             choice = text.strip()
-            if choice.isdigit() and 1 <= int(choice) <= len(ordered_ids):
+
+            if (
+                choice.isdigit()
+                and 1 <= int(choice) <= len(ordered_ids)
+            ):
                 target_id = ordered_ids[int(choice) - 1]
+
                 if target_id in state.get("alerts", {}):
                     del state["alerts"][target_id]
-                    send_bale_message("✅ آلارم حذف شد.")
+
+                    send_bale_message(
+                        "✅ آلارم حذف شد."
+                    )
+
                 else:
-                    send_bale_message("این آلارم قبلاً حذف شده بود.")
+                    send_bale_message(
+                        "این آلارم قبلاً حذف شده بود."
+                    )
+
                 state["mode"] = None
                 state["delete_order"] = []
+
             else:
-                send_bale_message("لطفاً فقط شماره‌ی آلارم رو بفرستید (مثلاً: 1)")
+                send_bale_message(
+                    "لطفاً فقط شماره‌ی آلارم رو بفرستید (مثلاً: 1)"
+                )
+
             continue
 
         parsed = parse_alert_command(text)
+
         if parsed is None:
-            send_bale_message("متوجه نشدم 🙁\nاز دکمه‌ها استفاده کنید یا فرمت: اسم‌ارز قیمت\nمثال: bitcoin 70000")
+            send_bale_message(
+                "متوجه نشدم 🙁\n"
+                "از دکمه‌ها استفاده کنید یا فرمت:\n"
+                "نماد ارز قیمت\n"
+                "مثال: BTCUSDT 70000"
+            )
+
             continue
 
         coin_id, target_price = parsed
+
         state["mode"] = None
-        send_bale_message(add_alert(state, coin_id, target_price))
+
+        send_bale_message(
+            add_alert(state, coin_id, target_price)
+        )
 
 
 def check_alerts(state):
     alerts = state.get("alerts", {})
+
     if not alerts:
         return
-    coin_ids = list({a["coin"] for a in alerts.values()})
+
+    coin_ids = list({
+        a["coin"]
+        for a in alerts.values()
+    })
+
     prices = get_prices(coin_ids)
 
     for alert in alerts.values():
+
         if alert["triggered"]:
             continue
+
         coin_id = alert["coin"]
+
         if coin_id not in prices:
             continue
+
         current_price = prices[coin_id]["usd"]
-        direction, target_price = alert["direction"], alert["price"]
+
+        direction = alert["direction"]
+        target_price = alert["price"]
+
         triggered = (
-            (direction == "above" and current_price >= target_price) or
-            (direction == "below" and current_price <= target_price)
+            (
+                direction == "above"
+                and current_price >= target_price
+            )
+            or
+            (
+                direction == "below"
+                and current_price <= target_price
+            )
         )
+
         if triggered:
-            arrow = "بالاتر رفت از" if direction == "above" else "پایین‌تر آمد از"
-            message = f"🔔 آلارم قیمت\nارز: {coin_id}\nقیمت فعلی: {current_price}\nقیمت {arrow} {target_price}"
+
+            arrow = (
+                "بالاتر رفت از"
+                if direction == "above"
+                else "پایین‌تر آمد از"
+            )
+
+            message = (
+                f"🔔 آلارم قیمت\n"
+                f"ارز: {coin_id}\n"
+                f"قیمت فعلی: {current_price}\n"
+                f"قیمت {arrow} {target_price}"
+            )
+
             send_bale_message(message)
+
             send_ntfy_message(message)
+
             alert["triggered"] = True
 
 
 def main():
     state = load_state()
+
     process_commands(state)
+
     check_alerts(state)
+
     save_state(state)
 
 
 if __name__ == "__main__":
     main()
+```
