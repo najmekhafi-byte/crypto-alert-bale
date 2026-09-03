@@ -8,9 +8,15 @@
       "direction": "above",
       "price": 4443.0,
       "triggered": false
+    },
+    "bitcoin_below_77800": {
+      "coin": "bitcoin",
+      "direction": "below",
+      "price": 77800.0,
+      "triggered": false
     }
   },
-  "mode": "awaiting_add",
-  "last_update_id": 22,
+  "mode": null,
+  "last_update_id": 25,
   "delete_order": []
 }
