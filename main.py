@@ -1,3 +1,4 @@
+```python
 import json
 import os
 import requests
@@ -14,6 +15,7 @@ MENU_KEYBOARD = {
         [{"text": "➕ افزودن آلارم"}],
         [{"text": "📋 لیست آلارم‌ها"}],
         [{"text": "🗑 حذف آلارم"}],
+        [{"text": "🗑 حذف همه آلارم‌ها"}],
     ],
     "resize_keyboard": True,
 }
@@ -147,7 +149,9 @@ def get_coingecko_prices(symbols):
         symbol = symbol.upper()
 
         if symbol in COINGECKO_IDS:
-            coin_ids.append(COINGECKO_IDS[symbol])
+            coin_ids.append(
+                COINGECKO_IDS[symbol]
+            )
         else:
             print(
                 f"No CoinGecko mapping for {symbol}"
@@ -184,7 +188,9 @@ def get_coingecko_prices(symbols):
         for symbol in symbols:
             symbol = symbol.upper()
 
-            coin_id = COINGECKO_IDS.get(symbol)
+            coin_id = COINGECKO_IDS.get(
+                symbol
+            )
 
             if (
                 coin_id
@@ -229,15 +235,13 @@ def get_prices(symbols):
         if symbol
     ]
 
-    # ----------------------------------------------
     # Stage 1: Binance Futures
-    # ----------------------------------------------
 
-    prices = get_binance_futures_prices(symbols)
+    prices = get_binance_futures_prices(
+        symbols
+    )
 
-    # ----------------------------------------------
-    # Find symbols that Binance could not provide
-    # ----------------------------------------------
+    # Find missing symbols
 
     missing_symbols = [
         symbol
@@ -245,9 +249,7 @@ def get_prices(symbols):
         if symbol not in prices
     ]
 
-    # ----------------------------------------------
     # Stage 2: CoinGecko fallback
-    # ----------------------------------------------
 
     if missing_symbols:
 
@@ -260,11 +262,15 @@ def get_prices(symbols):
             "Trying CoinGecko fallback..."
         )
 
-        fallback_prices = get_coingecko_prices(
-            missing_symbols
+        fallback_prices = (
+            get_coingecko_prices(
+                missing_symbols
+            )
         )
 
-        for symbol, price in fallback_prices.items():
+        for symbol, price in (
+            fallback_prices.items()
+        ):
             prices[symbol] = price
 
             print(
@@ -275,11 +281,17 @@ def get_prices(symbols):
     return prices
 
 
-def send_bale_message(text, with_menu=True):
+def send_bale_message(
+    text,
+    with_menu=True
+):
     if not BALE_BOT_TOKEN or not BALE_CHAT_ID:
         return
 
-    url = f"https://tapi.bale.ai/bot{BALE_BOT_TOKEN}/sendMessage"
+    url = (
+        f"https://tapi.bale.ai/"
+        f"bot{BALE_BOT_TOKEN}/sendMessage"
+    )
 
     payload = {
         "chat_id": BALE_CHAT_ID,
@@ -287,7 +299,9 @@ def send_bale_message(text, with_menu=True):
     }
 
     if with_menu:
-        payload["reply_markup"] = MENU_KEYBOARD
+        payload["reply_markup"] = (
+            MENU_KEYBOARD
+        )
 
     try:
         r = requests.post(
@@ -336,11 +350,16 @@ def get_bale_updates(offset):
     if not BALE_BOT_TOKEN:
         return []
 
-    url = f"https://tapi.bale.ai/bot{BALE_BOT_TOKEN}/getUpdates"
+    url = (
+        f"https://tapi.bale.ai/"
+        f"bot{BALE_BOT_TOKEN}/getUpdates"
+    )
 
-    params = {
-        "offset": offset + 1
-    } if offset else {}
+    params = (
+        {"offset": offset + 1}
+        if offset
+        else {}
+    )
 
     try:
         r = requests.get(
@@ -469,7 +488,9 @@ def add_alert(
             f"CoinGecko پیدا نشد."
         )
 
-    current_price = prices[symbol]
+    current_price = prices[
+        symbol
+    ]
 
     direction = (
         "above"
@@ -535,6 +556,10 @@ def process_commands(state):
             "text"
         ].strip()
 
+        # ------------------------------------------
+        # Start / Menu
+        # ------------------------------------------
+
         if text.lower() in (
             "شروع",
             "start",
@@ -550,6 +575,10 @@ def process_commands(state):
 
             continue
 
+        # ------------------------------------------
+        # Add alert
+        # ------------------------------------------
+
         if text == "➕ افزودن آلارم":
 
             state["mode"] = (
@@ -562,6 +591,10 @@ def process_commands(state):
             )
 
             continue
+
+        # ------------------------------------------
+        # List alerts
+        # ------------------------------------------
 
         if text == "📋 لیست آلارم‌ها":
 
@@ -578,6 +611,10 @@ def process_commands(state):
             )
 
             continue
+
+        # ------------------------------------------
+        # Delete one alert
+        # ------------------------------------------
 
         if text == "🗑 حذف آلارم":
 
@@ -612,6 +649,101 @@ def process_commands(state):
                 )
 
             continue
+
+        # ------------------------------------------
+        # Delete all alerts
+        # ------------------------------------------
+
+        if text == "🗑 حذف همه آلارم‌ها":
+
+            if not state.get(
+                "alerts"
+            ):
+
+                state["mode"] = None
+
+                send_bale_message(
+                    "هیچ آلارمی برای حذف وجود نداره."
+                )
+
+            else:
+
+                state["mode"] = (
+                    "awaiting_delete_all"
+                )
+
+                send_bale_message(
+                    "⚠️ مطمئن هستید که می‌خواهید "
+                    "همه آلارم‌ها حذف شوند؟\n\n"
+                    "برای تأیید بنویسید:\n"
+                    "✅ بله، حذف همه\n\n"
+                    "برای لغو بنویسید:\n"
+                    "❌ انصراف"
+                )
+
+            continue
+
+        # ------------------------------------------
+        # Confirm delete all
+        # ------------------------------------------
+
+        if state.get(
+            "mode"
+        ) == "awaiting_delete_all":
+
+            if text in (
+                "✅ بله، حذف همه",
+                "بله",
+                "بله حذف همه",
+                "تایید",
+                "تأیید"
+            ):
+
+                count = len(
+                    state.get(
+                        "alerts",
+                        {}
+                    )
+                )
+
+                state["alerts"] = {}
+
+                state["mode"] = None
+
+                state["delete_order"] = []
+
+                send_bale_message(
+                    f"✅ همه آلارم‌ها حذف شدند.\n"
+                    f"تعداد آلارم‌های حذف‌شده: {count}"
+                )
+
+            elif text in (
+                "❌ انصراف",
+                "انصراف",
+                "لغو"
+            ):
+
+                state["mode"] = None
+
+                state["delete_order"] = []
+
+                send_bale_message(
+                    "❌ حذف همه آلارم‌ها لغو شد."
+                )
+
+            else:
+
+                send_bale_message(
+                    "لطفاً یکی از این دو گزینه را بفرستید:\n\n"
+                    "✅ بله، حذف همه\n"
+                    "❌ انصراف"
+                )
+
+            continue
+
+        # ------------------------------------------
+        # Delete one - number selection
+        # ------------------------------------------
 
         if state.get(
             "mode"
@@ -668,6 +800,10 @@ def process_commands(state):
                 )
 
             continue
+
+        # ------------------------------------------
+        # Parse new alert
+        # ------------------------------------------
 
         parsed = parse_alert_command(
             text
@@ -809,3 +945,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+```
+
