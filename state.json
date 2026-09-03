@@ -2,17 +2,8 @@
   "btc_up_70000": {
     "triggered": true
   },
-  "alerts": {
-    "bitcoin_above_77930": {
-      "coin": "bitcoin",
-      "direction": "above",
-      "price": 77930.0,
-      "triggered": false
-    }
-  },
-  "mode": "awaiting_delete",
-  "last_update_id": 12,
-  "delete_order": [
-    "bitcoin_above_77930"
-  ]
+  "alerts": {},
+  "mode": "awaiting_add",
+  "last_update_id": 14,
+  "delete_order": []
 }
