@@ -1,0 +1,9 @@
+{
+  "bitcoin": [
+    {"id": "btc_up_70000", "direction": "above", "price": 70000},
+    {"id": "btc_down_60000", "direction": "below", "price": 60000}
+  ],
+  "ethereum": [
+    {"id": "eth_up_4000", "direction": "above", "price": 4000}
+  ]
+}
