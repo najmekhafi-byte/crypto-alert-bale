@@ -19,6 +19,30 @@ MENU_KEYBOARD = {
 }
 
 
+# --------------------------------------------------
+# CoinGecko fallback mapping
+# --------------------------------------------------
+
+COINGECKO_IDS = {
+    "BTCUSDT": "bitcoin",
+    "ETHUSDT": "ethereum",
+    "BNBUSDT": "binancecoin",
+    "XRPUSDT": "ripple",
+    "ADAUSDT": "cardano",
+    "SOLUSDT": "solana",
+    "DOGEUSDT": "dogecoin",
+    "DOTUSDT": "polkadot",
+    "LTCUSDT": "litecoin",
+    "TRXUSDT": "tron",
+    "SHIBUSDT": "shiba-inu",
+    "TONUSDT": "the-open-network",
+    "LINKUSDT": "chainlink",
+    "AVAXUSDT": "avalanche-2",
+    "MATICUSDT": "matic-network",
+    "XAUTUSDT": "tether-gold",
+}
+
+
 def load_state():
     if not os.path.exists(STATE_FILE):
         return {
@@ -44,7 +68,11 @@ def save_state(state):
         json.dump(state, f, ensure_ascii=False, indent=2)
 
 
-def get_prices(symbols):
+# --------------------------------------------------
+# Binance Futures
+# --------------------------------------------------
+
+def get_binance_futures_prices(symbols):
     if not symbols:
         return {}
 
@@ -68,61 +96,181 @@ def get_prices(symbols):
             )
 
             if r.status_code != 200:
-                error_text = (
-                    f"❌ خطای Binance Futures برای {symbol}\n"
-                    f"HTTP: {r.status_code}\n"
-                    f"پاسخ: {r.text[:1000]}"
+                print(
+                    f"Binance Futures unavailable for "
+                    f"{symbol}: HTTP {r.status_code}"
                 )
-
-                send_bale_message(error_text)
-
                 continue
 
             data = r.json()
 
             if "symbol" in data and "price" in data:
                 prices[symbol] = float(data["price"])
-
             else:
-                error_text = (
-                    f"❌ پاسخ نامعتبر Binance برای {symbol}\n"
-                    f"پاسخ: {str(data)[:1000]}"
+                print(
+                    f"Unexpected Binance response for "
+                    f"{symbol}: {data}"
                 )
 
-                print(error_text)
-                send_bale_message(error_text)
-
         except requests.exceptions.RequestException as e:
-
-            error_text = (
-                f"❌ خطای اتصال به Binance Futures\n"
-                f"ارز: {symbol}\n"
-                f"خطا: {e}"
+            print(
+                f"Binance Futures request error for "
+                f"{symbol}: {e}"
             )
-
-            print(error_text)
-            send_bale_message(error_text)
 
         except (ValueError, TypeError, KeyError) as e:
-
-            error_text = (
-                f"❌ خطای دریافت اطلاعات Binance\n"
-                f"ارز: {symbol}\n"
-                f"خطا: {e}"
+            print(
+                f"Binance Futures data error for "
+                f"{symbol}: {e}"
             )
-
-            print(error_text)
-            send_bale_message(error_text)
 
         except Exception as e:
-
-            error_text = (
-                f"❌ خطای ناشناخته برای {symbol}\n"
-                f"خطا: {e}"
+            print(
+                f"Unexpected Binance error for "
+                f"{symbol}: {e}"
             )
 
-            print(error_text)
-            send_bale_message(error_text)
+    return prices
+
+
+# --------------------------------------------------
+# CoinGecko fallback
+# --------------------------------------------------
+
+def get_coingecko_prices(symbols):
+    if not symbols:
+        return {}
+
+    coin_ids = []
+
+    for symbol in symbols:
+        symbol = symbol.upper()
+
+        if symbol in COINGECKO_IDS:
+            coin_ids.append(COINGECKO_IDS[symbol])
+        else:
+            print(
+                f"No CoinGecko mapping for {symbol}"
+            )
+
+    if not coin_ids:
+        return {}
+
+    url = "https://api.coingecko.com/api/v3/simple/price"
+
+    params = {
+        "ids": ",".join(sorted(set(coin_ids))),
+        "vs_currencies": "usd"
+    }
+
+    try:
+        r = requests.get(
+            url,
+            params=params,
+            timeout=15
+        )
+
+        print(
+            f"CoinGecko response: "
+            f"{r.status_code} {r.text}"
+        )
+
+        r.raise_for_status()
+
+        data = r.json()
+
+        prices = {}
+
+        for symbol in symbols:
+            symbol = symbol.upper()
+
+            coin_id = COINGECKO_IDS.get(symbol)
+
+            if (
+                coin_id
+                and coin_id in data
+                and "usd" in data[coin_id]
+            ):
+                prices[symbol] = float(
+                    data[coin_id]["usd"]
+                )
+
+        return prices
+
+    except requests.exceptions.RequestException as e:
+        print(
+            f"CoinGecko request error: {e}"
+        )
+
+    except (ValueError, TypeError, KeyError) as e:
+        print(
+            f"CoinGecko data error: {e}"
+        )
+
+    except Exception as e:
+        print(
+            f"Unexpected CoinGecko error: {e}"
+        )
+
+    return {}
+
+
+# --------------------------------------------------
+# Two-stage price system
+# --------------------------------------------------
+
+def get_prices(symbols):
+    if not symbols:
+        return {}
+
+    symbols = [
+        symbol.upper()
+        for symbol in symbols
+        if symbol
+    ]
+
+    # ----------------------------------------------
+    # Stage 1: Binance Futures
+    # ----------------------------------------------
+
+    prices = get_binance_futures_prices(symbols)
+
+    # ----------------------------------------------
+    # Find symbols that Binance could not provide
+    # ----------------------------------------------
+
+    missing_symbols = [
+        symbol
+        for symbol in symbols
+        if symbol not in prices
+    ]
+
+    # ----------------------------------------------
+    # Stage 2: CoinGecko fallback
+    # ----------------------------------------------
+
+    if missing_symbols:
+
+        print(
+            "Binance Futures unavailable for: "
+            f"{missing_symbols}"
+        )
+
+        print(
+            "Trying CoinGecko fallback..."
+        )
+
+        fallback_prices = get_coingecko_prices(
+            missing_symbols
+        )
+
+        for symbol, price in fallback_prices.items():
+            prices[symbol] = price
+
+            print(
+                f"CoinGecko fallback price for "
+                f"{symbol}: {price}"
+            )
 
     return prices
 
@@ -148,10 +296,17 @@ def send_bale_message(text, with_menu=True):
             timeout=15
         )
 
-        print("Bale send:", r.status_code, r.text)
+        print(
+            "Bale send:",
+            r.status_code,
+            r.text
+        )
 
     except Exception as e:
-        print("Error sending Bale message:", e)
+        print(
+            "Error sending Bale message:",
+            e
+        )
 
 
 def send_ntfy_message(text):
@@ -165,10 +320,16 @@ def send_ntfy_message(text):
             timeout=15
         )
 
-        print("ntfy send:", r.status_code)
+        print(
+            "ntfy send:",
+            r.status_code
+        )
 
     except Exception as e:
-        print("Error sending ntfy message:", e)
+        print(
+            "Error sending ntfy message:",
+            e
+        )
 
 
 def get_bale_updates(offset):
@@ -177,7 +338,9 @@ def get_bale_updates(offset):
 
     url = f"https://tapi.bale.ai/bot{BALE_BOT_TOKEN}/getUpdates"
 
-    params = {"offset": offset + 1} if offset else {}
+    params = {
+        "offset": offset + 1
+    } if offset else {}
 
     try:
         r = requests.get(
@@ -188,15 +351,26 @@ def get_bale_updates(offset):
 
         r.raise_for_status()
 
-        return r.json().get("result", [])
+        return r.json().get(
+            "result",
+            []
+        )
 
     except Exception as e:
-        print("Error getting Bale updates:", e)
+        print(
+            "Error getting Bale updates:",
+            e
+        )
+
         return []
 
 
 def format_price(p):
-    return str(int(p)) if p == int(p) else str(p)
+    return (
+        str(int(p))
+        if p == int(p)
+        else str(p)
+    )
 
 
 def parse_alert_command(text):
@@ -214,6 +388,7 @@ def parse_alert_command(text):
         price = float(
             parts[1].replace(",", "")
         )
+
     except ValueError:
         return None
 
@@ -221,16 +396,30 @@ def parse_alert_command(text):
 
 
 def numbered_alerts_list(state):
-    alerts = state.get("alerts", {})
+    alerts = state.get(
+        "alerts",
+        {}
+    )
 
     if not alerts:
-        return "هیچ آلارم فعالی ندارید.", []
+        return (
+            "هیچ آلارم فعالی ندارید.",
+            []
+        )
 
-    ordered_ids = list(alerts.keys())
+    ordered_ids = list(
+        alerts.keys()
+    )
 
-    lines = ["📋 آلارم‌های فعال:"]
+    lines = [
+        "📋 آلارم‌های فعال:"
+    ]
 
-    for i, aid in enumerate(ordered_ids, start=1):
+    for i, aid in enumerate(
+        ordered_ids,
+        start=1
+    ):
+
         a = alerts[aid]
 
         status = (
@@ -257,16 +446,27 @@ def numbered_alerts_list(state):
             f"{a['price']} — {status}"
         )
 
-    return "\n".join(lines), ordered_ids
+    return (
+        "\n".join(lines),
+        ordered_ids
+    )
 
 
-def add_alert(state, symbol, target_price):
-    prices = get_prices([symbol])
+def add_alert(
+    state,
+    symbol,
+    target_price
+):
+
+    prices = get_prices(
+        [symbol]
+    )
 
     if symbol not in prices:
         return (
             f"❌ قیمت {symbol} "
-            f"در Binance Futures پیدا نشد."
+            f"در Binance Futures و "
+            f"CoinGecko پیدا نشد."
         )
 
     current_price = prices[symbol]
@@ -301,26 +501,39 @@ def add_alert(state, symbol, target_price):
         f"✅ آلارم ثبت شد\n"
         f"{symbol}: وقتی قیمت {arrow} "
         f"{format_price(target_price)} دلار\n"
-        f"(قیمت فعلی Binance Futures: "
+        f"(قیمت فعلی: "
         f"{format_price(current_price)})"
     )
 
 
 def process_commands(state):
+
     updates = get_bale_updates(
-        state.get("last_update_id", 0)
+        state.get(
+            "last_update_id",
+            0
+        )
     )
 
     for update in updates:
 
-        state["last_update_id"] = update["update_id"]
+        state["last_update_id"] = (
+            update["update_id"]
+        )
 
-        message = update.get("message")
+        message = update.get(
+            "message"
+        )
 
-        if not message or "text" not in message:
+        if (
+            not message
+            or "text" not in message
+        ):
             continue
 
-        text = message["text"].strip()
+        text = message[
+            "text"
+        ].strip()
 
         if text.lower() in (
             "شروع",
@@ -328,6 +541,7 @@ def process_commands(state):
             "/start",
             "منو"
         ):
+
             state["mode"] = None
 
             send_bale_message(
@@ -338,7 +552,9 @@ def process_commands(state):
 
         if text == "➕ افزودن آلارم":
 
-            state["mode"] = "awaiting_add"
+            state["mode"] = (
+                "awaiting_add"
+            )
 
             send_bale_message(
                 "نماد ارز و قیمت رو بفرستید.\n"
@@ -351,16 +567,24 @@ def process_commands(state):
 
             state["mode"] = None
 
-            list_text, _ = numbered_alerts_list(state)
+            list_text, _ = (
+                numbered_alerts_list(
+                    state
+                )
+            )
 
-            send_bale_message(list_text)
+            send_bale_message(
+                list_text
+            )
 
             continue
 
         if text == "🗑 حذف آلارم":
 
             list_text, ordered_ids = (
-                numbered_alerts_list(state)
+                numbered_alerts_list(
+                    state
+                )
             )
 
             if not ordered_ids:
@@ -373,9 +597,13 @@ def process_commands(state):
 
             else:
 
-                state["mode"] = "awaiting_delete"
+                state["mode"] = (
+                    "awaiting_delete"
+                )
 
-                state["delete_order"] = ordered_ids
+                state["delete_order"] = (
+                    ordered_ids
+                )
 
                 send_bale_message(
                     list_text +
@@ -385,7 +613,9 @@ def process_commands(state):
 
             continue
 
-        if state.get("mode") == "awaiting_delete":
+        if state.get(
+            "mode"
+        ) == "awaiting_delete":
 
             ordered_ids = state.get(
                 "delete_order",
@@ -396,19 +626,25 @@ def process_commands(state):
 
             if (
                 choice.isdigit()
-                and 1 <= int(choice) <= len(ordered_ids)
+                and
+                1 <= int(choice)
+                <= len(ordered_ids)
             ):
 
-                target_id = ordered_ids[
-                    int(choice) - 1
-                ]
+                target_id = (
+                    ordered_ids[
+                        int(choice) - 1
+                    ]
+                )
 
                 if target_id in state.get(
                     "alerts",
                     {}
                 ):
 
-                    del state["alerts"][target_id]
+                    del state[
+                        "alerts"
+                    ][target_id]
 
                     send_bale_message(
                         "✅ آلارم حذف شد."
@@ -421,6 +657,7 @@ def process_commands(state):
                     )
 
                 state["mode"] = None
+
                 state["delete_order"] = []
 
             else:
@@ -432,7 +669,9 @@ def process_commands(state):
 
             continue
 
-        parsed = parse_alert_command(text)
+        parsed = parse_alert_command(
+            text
+        )
 
         if parsed is None:
 
@@ -446,7 +685,9 @@ def process_commands(state):
 
             continue
 
-        symbol, target_price = parsed
+        symbol, target_price = (
+            parsed
+        )
 
         state["mode"] = None
 
@@ -460,17 +701,26 @@ def process_commands(state):
 
 
 def check_alerts(state):
-    alerts = state.get("alerts", {})
+
+    alerts = state.get(
+        "alerts",
+        {}
+    )
 
     if not alerts:
         return
 
     symbols = list({
-        a.get("symbol", a.get("coin"))
+        a.get(
+            "symbol",
+            a.get("coin")
+        )
         for a in alerts.values()
     })
 
-    prices = get_prices(symbols)
+    prices = get_prices(
+        symbols
+    )
 
     for alert in alerts.values():
 
@@ -485,20 +735,29 @@ def check_alerts(state):
         if symbol not in prices:
             continue
 
-        current_price = prices[symbol]
+        current_price = prices[
+            symbol
+        ]
 
-        direction = alert["direction"]
-        target_price = alert["price"]
+        direction = alert[
+            "direction"
+        ]
+
+        target_price = alert[
+            "price"
+        ]
 
         triggered = (
             (
                 direction == "above"
-                and current_price >= target_price
+                and
+                current_price >= target_price
             )
             or
             (
                 direction == "below"
-                and current_price <= target_price
+                and
+                current_price <= target_price
             )
         )
 
@@ -514,29 +773,39 @@ def check_alerts(state):
             message = (
                 f"🔔 آلارم قیمت\n"
                 f"ارز: {symbol}\n"
-                f"قیمت فعلی Binance Futures: "
+                f"قیمت فعلی: "
                 f"{format_price(current_price)}\n"
                 f"قیمت {arrow} "
                 f"{format_price(target_price)}"
             )
 
-            send_bale_message(message)
+            send_bale_message(
+                message
+            )
 
-            send_ntfy_message(message)
+            send_ntfy_message(
+                message
+            )
 
             alert["triggered"] = True
 
 
 def main():
+
     state = load_state()
 
-    process_commands(state)
+    process_commands(
+        state
+    )
 
-    check_alerts(state)
+    check_alerts(
+        state
+    )
 
-    save_state(state)
+    save_state(
+        state
+    )
 
 
 if __name__ == "__main__":
     main()
-    
