@@ -26,9 +26,15 @@
       "direction": "above",
       "price": 2395.0,
       "triggered": false
+    },
+    "binancecoin_below_700.82": {
+      "coin": "binancecoin",
+      "direction": "below",
+      "price": 700.82,
+      "triggered": true
     }
   },
-  "mode": "awaiting_add",
-  "last_update_id": 34,
+  "mode": null,
+  "last_update_id": 35,
   "delete_order": []
 }
