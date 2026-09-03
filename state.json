@@ -1,5 +1,8 @@
 {
   "btc_up_70000": {
     "triggered": true
-  }
+  },
+  "alerts": {},
+  "mode": null,
+  "last_update_id": 3
 }
