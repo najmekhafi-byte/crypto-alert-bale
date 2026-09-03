@@ -67,34 +67,62 @@ def get_prices(symbols):
                 f"{r.status_code} {r.text}"
             )
 
-            r.raise_for_status()
+            if r.status_code != 200:
+                error_text = (
+                    f"❌ خطای Binance Futures برای {symbol}\n"
+                    f"HTTP: {r.status_code}\n"
+                    f"پاسخ: {r.text[:1000]}"
+                )
+
+                send_bale_message(error_text)
+
+                continue
 
             data = r.json()
 
             if "symbol" in data and "price" in data:
                 prices[symbol] = float(data["price"])
+
             else:
-                print(
-                    f"Unexpected Binance response for {symbol}: "
-                    f"{data}"
+                error_text = (
+                    f"❌ پاسخ نامعتبر Binance برای {symbol}\n"
+                    f"پاسخ: {str(data)[:1000]}"
                 )
 
+                print(error_text)
+                send_bale_message(error_text)
+
         except requests.exceptions.RequestException as e:
-            print(
-                f"Binance Futures request error for "
-                f"{symbol}: {e}"
+
+            error_text = (
+                f"❌ خطای اتصال به Binance Futures\n"
+                f"ارز: {symbol}\n"
+                f"خطا: {e}"
             )
+
+            print(error_text)
+            send_bale_message(error_text)
 
         except (ValueError, TypeError, KeyError) as e:
-            print(
-                f"Binance Futures data error for "
-                f"{symbol}: {e}"
+
+            error_text = (
+                f"❌ خطای دریافت اطلاعات Binance\n"
+                f"ارز: {symbol}\n"
+                f"خطا: {e}"
             )
 
+            print(error_text)
+            send_bale_message(error_text)
+
         except Exception as e:
-            print(
-                f"Unexpected error for {symbol}: {e}"
+
+            error_text = (
+                f"❌ خطای ناشناخته برای {symbol}\n"
+                f"خطا: {e}"
             )
+
+            print(error_text)
+            send_bale_message(error_text)
 
     return prices
 
@@ -511,3 +539,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+    
