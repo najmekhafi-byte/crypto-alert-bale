@@ -2,8 +2,15 @@
   "btc_up_70000": {
     "triggered": true
   },
-  "alerts": {},
+  "alerts": {
+    "ETHUSDT_above_5000": {
+      "symbol": "ETHUSDT",
+      "direction": "above",
+      "price": 5000.0,
+      "triggered": false
+    }
+  },
   "mode": null,
-  "last_update_id": 49,
+  "last_update_id": 50,
   "delete_order": []
 }
