@@ -50,17 +50,21 @@ def get_prices(symbols):
 
     prices = {}
 
+    url = "https://fapi.binance.com/fapi/v1/ticker/price"
+
     for symbol in sorted(set(symbols)):
         symbol = symbol.upper()
-
-        url = "https://fapi.binance.com/fapi/v1/ticker/price"
-        params = {"symbol": symbol}
 
         try:
             r = requests.get(
                 url,
-                params=params,
+                params={"symbol": symbol},
                 timeout=15
+            )
+
+            print(
+                f"Binance Futures response for {symbol}: "
+                f"{r.status_code} {r.text}"
             )
 
             r.raise_for_status()
@@ -69,11 +73,27 @@ def get_prices(symbols):
 
             if "symbol" in data and "price" in data:
                 prices[symbol] = float(data["price"])
+            else:
+                print(
+                    f"Unexpected Binance response for {symbol}: "
+                    f"{data}"
+                )
+
+        except requests.exceptions.RequestException as e:
+            print(
+                f"Binance Futures request error for "
+                f"{symbol}: {e}"
+            )
+
+        except (ValueError, TypeError, KeyError) as e:
+            print(
+                f"Binance Futures data error for "
+                f"{symbol}: {e}"
+            )
 
         except Exception as e:
             print(
-                f"Error getting Binance Futures price "
-                f"for {symbol}: {e}"
+                f"Unexpected error for {symbol}: {e}"
             )
 
     return prices
