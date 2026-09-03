@@ -43,7 +43,7 @@
       "symbol": "ETHUSDT",
       "direction": "above",
       "price": 2392.0,
-      "triggered": false
+      "triggered": true
     }
   },
   "mode": null,
