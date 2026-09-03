@@ -1,113 +1,199 @@
 import json
 import os
-import sys
 import requests
 
-# ---------- خواندن اطلاعات حساس از GitHub Secrets ----------
 BALE_BOT_TOKEN = os.environ.get("BALE_BOT_TOKEN")
 BALE_CHAT_ID = os.environ.get("BALE_CHAT_ID")
 NTFY_TOPIC = os.environ.get("NTFY_TOPIC")
 
-CONFIG_FILE = "config.json"
 STATE_FILE = "state.json"
 
+COIN_ALIASES = {
+    "bitcoin": "bitcoin", "btc": "bitcoin", "بیتکوین": "bitcoin", "بیت کوین": "bitcoin",
+    "ethereum": "ethereum", "eth": "ethereum", "اتریوم": "ethereum",
+    "tether": "tether", "usdt": "tether", "تتر": "tether",
+    "binancecoin": "binancecoin", "bnb": "binancecoin",
+    "ripple": "ripple", "xrp": "ripple",
+    "cardano": "cardano", "ada": "cardano",
+    "solana": "solana", "sol": "solana",
+    "dogecoin": "dogecoin", "doge": "dogecoin", "دوج": "dogecoin",
+    "polkadot": "polkadot", "dot": "polkadot",
+    "litecoin": "litecoin", "ltc": "litecoin",
+    "tron": "tron", "trx": "tron",
+    "shiba-inu": "shiba-inu", "shib": "shiba-inu", "شیبا": "shiba-inu",
+    "toncoin": "the-open-network", "ton": "the-open-network",
+    "chainlink": "chainlink", "link": "chainlink",
+    "avalanche-2": "avalanche-2", "avax": "avalanche-2",
+    "polygon": "matic-network", "matic": "matic-network",
+}
 
-def load_json(path):
-    with open(path, "r", encoding="utf-8") as f:
-        return json.load(f)
+
+def load_state():
+    if not os.path.exists(STATE_FILE):
+        return {"last_update_id": 0, "alerts": {}}
+    with open(STATE_FILE, "r", encoding="utf-8") as f:
+        data = json.load(f)
+    if "alerts" not in data:
+        data = {"last_update_id": data.get("last_update_id", 0), "alerts": {}}
+    return data
 
 
-def save_json(path, data):
-    with open(path, "w", encoding="utf-8") as f:
-        json.dump(data, f, ensure_ascii=False, indent=2)
+def save_state(state):
+    with open(STATE_FILE, "w", encoding="utf-8") as f:
+        json.dump(state, f, ensure_ascii=False, indent=2)
 
 
 def get_prices(coin_ids):
+    if not coin_ids:
+        return {}
     url = "https://api.coingecko.com/api/v3/simple/price"
-    params = {"ids": ",".join(coin_ids), "vs_currencies": "usd"}
-    response = requests.get(url, params=params, timeout=15)
-    response.raise_for_status()
-    return response.json()
+    params = {"ids": ",".join(sorted(set(coin_ids))), "vs_currencies": "usd"}
+    r = requests.get(url, params=params, timeout=15)
+    r.raise_for_status()
+    return r.json()
 
 
 def send_bale_message(text):
     if not BALE_BOT_TOKEN or not BALE_CHAT_ID:
-        print("Bale token/chat_id not set, skipping Bale message.")
         return
     url = f"https://tapi.bale.ai/bot{BALE_BOT_TOKEN}/sendMessage"
-    payload = {"chat_id": BALE_CHAT_ID, "text": text}
     try:
-        r = requests.post(url, json=payload, timeout=15)
-        print("Bale response:", r.status_code, r.text)
+        r = requests.post(url, json={"chat_id": BALE_CHAT_ID, "text": text}, timeout=15)
+        print("Bale send:", r.status_code, r.text)
     except Exception as e:
         print("Error sending Bale message:", e)
 
 
 def send_ntfy_message(text):
     if not NTFY_TOPIC:
-        print("ntfy topic not set, skipping ntfy message.")
         return
-    url = f"https://ntfy.sh/{NTFY_TOPIC}"
     try:
-        r = requests.post(url, data=text.encode("utf-8"), timeout=15)
-        print("ntfy response:", r.status_code)
+        r = requests.post(f"https://ntfy.sh/{NTFY_TOPIC}", data=text.encode("utf-8"), timeout=15)
+        print("ntfy send:", r.status_code)
     except Exception as e:
         print("Error sending ntfy message:", e)
 
 
-def main():
-    config = load_json(CONFIG_FILE)
-    state = load_json(STATE_FILE)
+def get_bale_updates(offset):
+    if not BALE_BOT_TOKEN:
+        return []
+    url = f"https://tapi.bale.ai/bot{BALE_BOT_TOKEN}/getUpdates"
+    params = {"offset": offset + 1} if offset else {}
+    try:
+        r = requests.get(url, params=params, timeout=15)
+        r.raise_for_status()
+        return r.json().get("result", [])
+    except Exception as e:
+        print("Error getting Bale updates:", e)
+        return []
 
-    coin_ids = list(config.keys())
-    prices = get_prices(coin_ids)
 
-    state_changed = False
+def format_price(p):
+    return str(int(p)) if p == int(p) else str(p)
 
-    for coin_id, alerts in config.items():
+
+def parse_alert_command(text):
+    parts = text.strip().split()
+    if len(parts) != 2:
+        return None
+    coin_id = COIN_ALIASES.get(parts[0].strip().lower())
+    if not coin_id:
+        return None
+    try:
+        price = float(parts[1].replace(",", ""))
+    except ValueError:
+        return None
+    return coin_id, price
+
+
+def process_commands(state):
+    updates = get_bale_updates(state.get("last_update_id", 0))
+    for update in updates:
+        state["last_update_id"] = update["update_id"]
+        message = update.get("message")
+        if not message or "text" not in message:
+            continue
+        text = message["text"].strip()
+
+        if text.lower() in ("list", "لیست"):
+            alerts = state.get("alerts", {})
+            if not alerts:
+                send_bale_message("هیچ آلارم فعالی ندارید.")
+            else:
+                lines = ["📋 آلارم‌های فعال:"]
+                for aid, a in alerts.items():
+                    status = "✅ ارسال شده" if a["triggered"] else "⏳ در انتظار"
+                    arrow = "بالای" if a["direction"] == "above" else "زیر"
+                    lines.append(f"{a['coin']} {arrow} {a['price']} — {status}")
+                send_bale_message("\n".join(lines))
+            continue
+
+        if text.lower().startswith("remove "):
+            target = text.split(" ", 1)[1].strip()
+            removed = [k for k in state.get("alerts", {}) if k.startswith(target)]
+            for k in removed:
+                del state["alerts"][k]
+            send_bale_message("حذف شد." if removed else "پیدا نشد.")
+            continue
+
+        parsed = parse_alert_command(text)
+        if parsed is None:
+            send_bale_message("متوجه نشدم 🙁\nفرمت درست: اسم‌ارز قیمت\nمثال: bitcoin 70000")
+            continue
+
+        coin_id, target_price = parsed
+        prices = get_prices([coin_id])
         if coin_id not in prices:
-            print(f"Warning: no price data for {coin_id}")
+            send_bale_message(f"قیمت {coin_id} پیدا نشد.")
             continue
 
         current_price = prices[coin_id]["usd"]
-        print(f"{coin_id}: current price = {current_price}")
+        direction = "above" if target_price >= current_price else "below"
+        alert_id = f"{coin_id}_{direction}_{format_price(target_price)}"
 
-        for alert in alerts:
-            alert_id = alert["id"]
-            direction = alert["direction"]
-            target_price = alert["price"]
+        state.setdefault("alerts", {})[alert_id] = {
+            "coin": coin_id, "direction": direction,
+            "price": target_price, "triggered": False,
+        }
+        arrow = "بالاتر رفت از" if direction == "above" else "پایین‌تر آمد از"
+        send_bale_message(
+            f"✅ آلارم ثبت شد\n{coin_id}: وقتی قیمت {arrow} {format_price(target_price)} دلار\n"
+            f"(قیمت فعلی: {current_price})"
+        )
 
-            already_triggered = state.get(alert_id, {}).get("triggered", False)
 
-            if already_triggered:
-                continue
+def check_alerts(state):
+    alerts = state.get("alerts", {})
+    if not alerts:
+        return
+    coin_ids = list({a["coin"] for a in alerts.values()})
+    prices = get_prices(coin_ids)
 
-            should_trigger = False
-            if direction == "above" and current_price >= target_price:
-                should_trigger = True
-            elif direction == "below" and current_price <= target_price:
-                should_trigger = True
+    for alert in alerts.values():
+        if alert["triggered"]:
+            continue
+        coin_id = alert["coin"]
+        if coin_id not in prices:
+            continue
+        current_price = prices[coin_id]["usd"]
+        direction, target_price = alert["direction"], alert["price"]
+        triggered = (
+            (direction == "above" and current_price >= target_price) or
+            (direction == "below" and current_price <= target_price)
+        )
+        if triggered:
+            arrow = "بالاتر رفت از" if direction == "above" else "پایین‌تر آمد از"
+            message = f"🔔 آلارم قیمت\nارز: {coin_id}\nقیمت فعلی: {current_price}\nقیمت {arrow} {target_price}"
+            send_bale_message(message)
+            send_ntfy_message(message)
+            alert["triggered"] = True
 
-            if should_trigger:
-                direction_fa = "بالاتر رفت از" if direction == "above" else "پایین‌تر آمد از"
-                message = (
-                    f"🔔 آلارم قیمت\n"
-                    f"ارز: {coin_id}\n"
-                    f"قیمت فعلی: {current_price} دلار\n"
-                    f"قیمت {direction_fa} {target_price} دلار"
-                )
-                print("Triggering alert:", alert_id)
-                send_bale_message(message)
-                send_ntfy_message(message)
 
-                state[alert_id] = {"triggered": True}
-                state_changed = True
-
-    if state_changed:
-        save_json(STATE_FILE, state)
-        print("State updated.")
-    else:
-        print("No new alerts triggered.")
+def main():
+    state = load_state()
+    process_commands(state)
+    check_alerts(state)
+    save_state(state)
 
 
 if __name__ == "__main__":
