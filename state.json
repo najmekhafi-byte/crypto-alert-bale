@@ -13,7 +13,7 @@
       "coin": "bitcoin",
       "direction": "below",
       "price": 77800.0,
-      "triggered": false
+      "triggered": true
     }
   },
   "mode": null,
