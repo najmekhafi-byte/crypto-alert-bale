@@ -3,7 +3,7 @@
     "triggered": true
   },
   "alerts": {},
-  "mode": "awaiting_add",
-  "last_update_id": 53,
+  "mode": null,
+  "last_update_id": 54,
   "delete_order": []
 }
