@@ -43,7 +43,7 @@
       "symbol": "XRPUSDT",
       "direction": "above",
       "price": 1.4058,
-      "triggered": false
+      "triggered": true
     },
     "XAUUSDT_above_4439": {
       "symbol": "XAUUSDT",
