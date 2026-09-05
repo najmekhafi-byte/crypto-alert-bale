@@ -2,9 +2,22 @@
   "btc_up_70000": {
     "triggered": true
   },
-  "alerts": {},
+  "alerts": {
+    "BTCUSDT_below_79572": {
+      "symbol": "BTCUSDT",
+      "direction": "below",
+      "price": 79572.0,
+      "triggered": false
+    },
+    "ETHUSDT_below_2452": {
+      "symbol": "ETHUSDT",
+      "direction": "below",
+      "price": 2452.0,
+      "triggered": false
+    }
+  },
   "mode": null,
-  "last_update_id": 79,
+  "last_update_id": 80,
   "delete_order": [],
   "favorites": [
     "BTCUSDT",
