@@ -3,42 +3,6 @@
     "triggered": true
   },
   "alerts": {
-    "BTCUSDT_below_79580": {
-      "symbol": "BTCUSDT",
-      "direction": "below",
-      "price": 79580.0,
-      "triggered": false
-    },
-    "ETHUSDT_below_2455": {
-      "symbol": "ETHUSDT",
-      "direction": "below",
-      "price": 2455.0,
-      "triggered": true
-    },
-    "BNBUSDT_above_752": {
-      "symbol": "BNBUSDT",
-      "direction": "above",
-      "price": 752.0,
-      "triggered": false
-    },
-    "ADAUSDT_above_0.2133": {
-      "symbol": "ADAUSDT",
-      "direction": "above",
-      "price": 0.2133,
-      "triggered": true
-    },
-    "SOLUSDT_above_103": {
-      "symbol": "SOLUSDT",
-      "direction": "above",
-      "price": 103.0,
-      "triggered": false
-    },
-    "ETHUSDT_above_2455": {
-      "symbol": "ETHUSDT",
-      "direction": "above",
-      "price": 2455.0,
-      "triggered": true
-    },
     "XRPUSDT_above_1.4058": {
       "symbol": "XRPUSDT",
       "direction": "above",
@@ -64,20 +28,9 @@
       "triggered": true
     }
   },
-  "mode": "awaiting_delete",
-  "last_update_id": 62,
-  "delete_order": [
-    "BTCUSDT_below_79580",
-    "ETHUSDT_below_2455",
-    "BNBUSDT_above_752",
-    "ADAUSDT_above_0.2133",
-    "SOLUSDT_above_103",
-    "ETHUSDT_above_2455",
-    "XRPUSDT_above_1.4058",
-    "XAUUSDT_above_4439",
-    "ONDOUSDT_above_0.3684",
-    "AAVEUSDT_above_130.45"
-  ],
+  "mode": null,
+  "last_update_id": 63,
+  "delete_order": [],
   "favorites": [],
   "selected_symbol": null,
   "fav_delete_order": []
