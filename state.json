@@ -37,7 +37,7 @@
       "symbol": "ETHUSDT",
       "direction": "above",
       "price": 2455.0,
-      "triggered": false
+      "triggered": true
     },
     "XRPUSDT_above_1.4058": {
       "symbol": "XRPUSDT",
