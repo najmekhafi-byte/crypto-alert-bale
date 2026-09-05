@@ -43,28 +43,46 @@ KRAKEN_PAIRS = {
     "AVAXUSDT": "AVAXUSD",
 }
 
-# بقیه‌ی ارزها (که Kraken نداره) از CoinGecko گرفته می‌شن
-COINGECKO_IDS = {
-    "BTCUSDT": "bitcoin",
-    "ETHUSDT": "ethereum",
-    "BNBUSDT": "binancecoin",
-    "XRPUSDT": "ripple",
-    "ADAUSDT": "cardano",
-    "SOLUSDT": "solana",
-    "DOGEUSDT": "dogecoin",
-    "DOTUSDT": "polkadot",
-    "LTCUSDT": "litecoin",
-    "TRXUSDT": "tron",
-    "SHIBUSDT": "shiba-inu",
-    "TONUSDT": "the-open-network",
-    "LINKUSDT": "chainlink",
-    "AVAXUSDT": "avalanche-2",
-    "MATICUSDT": "matic-network",
-    "XAUTUSDT": "tether-gold",
+# override های دستی و ثابت (مستقل از رتبه‌بندی بازار)
+MANUAL_COINGECKO_IDS = {
     "XAUUSDT": "tether-gold",
-    "AAVEUSDT": "aave",
-    "ONDOUSDT": "ondo-finance",
+    "XAUTUSDT": "tether-gold",
 }
+
+_TOP100_ID_MAP = None
+
+
+def get_top100_id_map():
+    """لیست ۱۰۰ ارز برتر بر اساس ارزش بازار، مستقیم از CoinGecko (خودکار و همیشه به‌روز)."""
+    global _TOP100_ID_MAP
+    if _TOP100_ID_MAP is not None:
+        return _TOP100_ID_MAP
+
+    id_map = {}
+    try:
+        r = requests.get(
+            "https://api.coingecko.com/api/v3/coins/markets",
+            params={"vs_currency": "usd", "order": "market_cap_desc", "per_page": 100, "page": 1},
+            timeout=20,
+        )
+        r.raise_for_status()
+        for coin in r.json():
+            symbol = coin.get("symbol", "").upper() + "USDT"
+            coin_id = coin.get("id")
+            if symbol and coin_id and symbol not in id_map:
+                id_map[symbol] = coin_id
+        print(f"Top100 list loaded: {len(id_map)} coins")
+    except Exception as e:
+        print("Error fetching top100 list:", e)
+
+    _TOP100_ID_MAP = id_map
+    return _TOP100_ID_MAP
+
+
+def resolve_coingecko_id(symbol):
+    if symbol in MANUAL_COINGECKO_IDS:
+        return MANUAL_COINGECKO_IDS[symbol]
+    return get_top100_id_map().get(symbol)
 
 
 def load_state():
@@ -85,7 +103,6 @@ def save_state(state):
 
 
 def get_kraken_prices(symbols):
-    """قیمت مستقیم از صرافی Kraken (دقیق‌تر، چون Binance/Bybit از IP گیت‌هاب مسدودن)."""
     prices = {}
     for symbol in symbols:
         kraken_pair = KRAKEN_PAIRS.get(symbol)
@@ -120,7 +137,7 @@ def get_coingecko_prices(symbols):
         return {}
     coin_id_to_symbols = {}
     for symbol in symbols:
-        coin_id = COINGECKO_IDS.get(symbol)
+        coin_id = resolve_coingecko_id(symbol)
         if coin_id:
             coin_id_to_symbols.setdefault(coin_id, []).append(symbol)
         else:
@@ -150,7 +167,6 @@ def get_coingecko_prices(symbols):
 
 
 def get_prices(symbols):
-    """اول Kraken (دقیق‌تر)، بعد CoinGecko برای بقیه."""
     if not symbols:
         return {}
     symbols = list({s.upper() for s in symbols if s})
@@ -333,7 +349,7 @@ def process_commands(state):
                 state["delete_order"] = ordered_ids
                 send_bale_message(
                     list_text + "\n\nشماره‌ی آلارم(ها) رو بفرستید.\n"
-                    "برای چندتایی، با فاصله بنویسید: 1 3 5"
+                    "می‌تونید با فاصله یا هر کدوم در یک خط بنویسید: 1 3 5"
                 )
             continue
 
