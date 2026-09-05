@@ -2,8 +2,39 @@
   "btc_up_70000": {
     "triggered": true
   },
-  "alerts": {},
+  "alerts": {
+    "BTCUSDT_below_79580": {
+      "symbol": "BTCUSDT",
+      "direction": "below",
+      "price": 79580.0,
+      "triggered": false
+    },
+    "ETHUSDT_below_2455": {
+      "symbol": "ETHUSDT",
+      "direction": "below",
+      "price": 2455.0,
+      "triggered": false
+    },
+    "BNBUSDT_above_752": {
+      "symbol": "BNBUSDT",
+      "direction": "above",
+      "price": 752.0,
+      "triggered": false
+    },
+    "ADAUSDT_above_0.2133": {
+      "symbol": "ADAUSDT",
+      "direction": "above",
+      "price": 0.2133,
+      "triggered": false
+    },
+    "SOLUSDT_above_103": {
+      "symbol": "SOLUSDT",
+      "direction": "above",
+      "price": 103.0,
+      "triggered": false
+    }
+  },
   "mode": null,
-  "last_update_id": 56,
+  "last_update_id": 57,
   "delete_order": []
 }
