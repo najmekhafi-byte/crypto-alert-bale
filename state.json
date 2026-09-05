@@ -61,7 +61,7 @@
       "symbol": "AAVEUSDT",
       "direction": "above",
       "price": 130.45,
-      "triggered": false
+      "triggered": true
     }
   },
   "mode": null,
