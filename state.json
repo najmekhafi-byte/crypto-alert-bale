@@ -29,9 +29,11 @@
     }
   },
   "mode": "fav_menu",
-  "last_update_id": 64,
+  "last_update_id": 68,
   "delete_order": [],
-  "favorites": [],
+  "favorites": [
+    "BTCUSDT"
+  ],
   "selected_symbol": null,
   "fav_delete_order": []
 }
