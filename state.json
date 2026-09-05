@@ -25,7 +25,7 @@
       "symbol": "ADAUSDT",
       "direction": "above",
       "price": 0.2133,
-      "triggered": false
+      "triggered": true
     },
     "SOLUSDT_above_103": {
       "symbol": "SOLUSDT",
