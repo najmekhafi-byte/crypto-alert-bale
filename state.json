@@ -31,7 +31,7 @@
       "symbol": "BNBUSDT",
       "direction": "below",
       "price": 774.0,
-      "triggered": false
+      "triggered": true
     },
     "ADAUSDT_below_0.2177": {
       "symbol": "ADAUSDT",
