@@ -64,9 +64,20 @@
       "triggered": true
     }
   },
-  "mode": null,
-  "last_update_id": 61,
-  "delete_order": [],
+  "mode": "awaiting_delete",
+  "last_update_id": 62,
+  "delete_order": [
+    "BTCUSDT_below_79580",
+    "ETHUSDT_below_2455",
+    "BNBUSDT_above_752",
+    "ADAUSDT_above_0.2133",
+    "SOLUSDT_above_103",
+    "ETHUSDT_above_2455",
+    "XRPUSDT_above_1.4058",
+    "XAUUSDT_above_4439",
+    "ONDOUSDT_above_0.3684",
+    "AAVEUSDT_above_130.45"
+  ],
   "favorites": [],
   "selected_symbol": null,
   "fav_delete_order": []
