@@ -29,10 +29,12 @@
     }
   },
   "mode": "fav_menu",
-  "last_update_id": 68,
+  "last_update_id": 72,
   "delete_order": [],
   "favorites": [
-    "BTCUSDT"
+    "BTCUSDT",
+    "ETHUSDT",
+    "XAUUSDT"
   ],
   "selected_symbol": null,
   "fav_delete_order": []
