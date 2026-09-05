@@ -194,7 +194,15 @@ def send_ntfy_message(text):
     if not NTFY_TOPIC:
         return
     try:
-        r = requests.post(f"https://ntfy.sh/{NTFY_TOPIC}", data=text.encode("utf-8"), timeout=15)
+        r = requests.post(
+            f"https://ntfy.sh/{NTFY_TOPIC}",
+            data=text.encode("utf-8"),
+            headers={
+                "Priority": "urgent",
+                "Tags": "rotating_light",
+            },
+            timeout=15,
+        )
         print("ntfy send:", r.status_code)
     except Exception as e:
         print("Error sending ntfy message:", e)
@@ -343,7 +351,6 @@ def process_commands(state):
             send_bale_message("منوی اصلی:")
             continue
 
-        # ---------- افزودن آلارم با تایپ نماد ----------
         if text == "➕ افزودن آلارم":
             state["mode"] = "awaiting_add"
             send_bale_message(
@@ -353,7 +360,6 @@ def process_commands(state):
             )
             continue
 
-        # ---------- ارزهای مورد علاقه ----------
         if text == "⭐ ارزهای مورد علاقه":
             favorites = state.get("favorites", [])
             state["mode"] = "fav_menu"
@@ -466,14 +472,12 @@ def process_commands(state):
             send_bale_message(reply, with_menu=False, custom_keyboard=favorites_keyboard(state.get("favorites", [])))
             continue
 
-        # ---------- لیست آلارم‌ها ----------
         if text == "📋 لیست آلارم‌ها":
             state["mode"] = None
             list_text, _ = numbered_alerts_list(state)
             send_bale_message(list_text)
             continue
 
-        # ---------- حذف آلارم ----------
         if text == "🗑 حذف آلارم":
             list_text, ordered_ids = numbered_alerts_list(state)
             if not ordered_ids:
@@ -536,7 +540,6 @@ def process_commands(state):
                 send_bale_message("لطفاً شماره‌ی آلارم(ها) رو بفرستید (مثلاً: 1 3 5)")
             continue
 
-        # ---------- افزودن مستقیم با تایپ ----------
         reply, any_valid = process_add_lines(state, text)
         state["mode"] = None
         if not any_valid:
