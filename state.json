@@ -32,9 +32,39 @@
       "direction": "above",
       "price": 103.0,
       "triggered": false
+    },
+    "ETHUSDT_above_2455": {
+      "symbol": "ETHUSDT",
+      "direction": "above",
+      "price": 2455.0,
+      "triggered": false
+    },
+    "XRPUSDT_above_1.4058": {
+      "symbol": "XRPUSDT",
+      "direction": "above",
+      "price": 1.4058,
+      "triggered": false
+    },
+    "XAUUSDT_above_4439": {
+      "symbol": "XAUUSDT",
+      "direction": "above",
+      "price": 4439.0,
+      "triggered": false
+    },
+    "ONDOUSDT_above_0.3684": {
+      "symbol": "ONDOUSDT",
+      "direction": "above",
+      "price": 0.3684,
+      "triggered": false
+    },
+    "AAVEUSDT_above_130.45": {
+      "symbol": "AAVEUSDT",
+      "direction": "above",
+      "price": 130.45,
+      "triggered": false
     }
   },
   "mode": null,
-  "last_update_id": 57,
+  "last_update_id": 58,
   "delete_order": []
 }
