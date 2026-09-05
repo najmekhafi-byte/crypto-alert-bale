@@ -27,6 +27,23 @@ DELETE_ALL_KEYBOARD = {
     "resize_keyboard": True,
 }
 
+# ارزهایی که از Kraken (صرافی واقعی، دقیق‌تر) قیمت‌شون گرفته می‌شه
+KRAKEN_PAIRS = {
+    "BTCUSDT": "XBTUSD",
+    "ETHUSDT": "ETHUSD",
+    "XRPUSDT": "XRPUSD",
+    "ADAUSDT": "ADAUSD",
+    "SOLUSDT": "SOLUSD",
+    "DOGEUSDT": "DOGEUSD",
+    "DOTUSDT": "DOTUSD",
+    "LTCUSDT": "LTCUSD",
+    "TRXUSDT": "TRXUSD",
+    "SHIBUSDT": "SHIBUSD",
+    "LINKUSDT": "LINKUSD",
+    "AVAXUSDT": "AVAXUSD",
+}
+
+# بقیه‌ی ارزها (که Kraken نداره) از CoinGecko گرفته می‌شن
 COINGECKO_IDS = {
     "BTCUSDT": "bitcoin",
     "ETHUSDT": "ethereum",
@@ -44,6 +61,9 @@ COINGECKO_IDS = {
     "AVAXUSDT": "avalanche-2",
     "MATICUSDT": "matic-network",
     "XAUTUSDT": "tether-gold",
+    "XAUUSDT": "tether-gold",
+    "AAVEUSDT": "aave",
+    "ONDOUSDT": "ondo-finance",
 }
 
 
@@ -64,81 +84,86 @@ def save_state(state):
         json.dump(state, f, ensure_ascii=False, indent=2)
 
 
-def get_binance_futures_prices(symbols):
-    if not symbols:
-        return {}
+def get_kraken_prices(symbols):
+    """قیمت مستقیم از صرافی Kraken (دقیق‌تر، چون Binance/Bybit از IP گیت‌هاب مسدودن)."""
     prices = {}
-    url = "https://fapi.binance.com/fapi/v1/ticker/price"
-    for symbol in sorted(set(symbols)):
-        symbol = symbol.upper()
+    for symbol in symbols:
+        kraken_pair = KRAKEN_PAIRS.get(symbol)
+        if not kraken_pair:
+            continue
         try:
-            r = requests.get(url, params={"symbol": symbol}, timeout=15)
-            print(f"Binance Futures response for {symbol}: {r.status_code} {r.text}")
+            r = requests.get(
+                "https://api.kraken.com/0/public/Ticker",
+                params={"pair": kraken_pair},
+                timeout=15,
+            )
+            print(f"Kraken response for {symbol}: {r.status_code} {r.text}")
             if r.status_code != 200:
-                print(f"Binance Futures unavailable for {symbol}: HTTP {r.status_code}")
                 continue
             data = r.json()
-            if "symbol" in data and "price" in data:
-                prices[symbol] = float(data["price"])
-            else:
-                print(f"Unexpected Binance response for {symbol}: {data}")
-        except requests.exceptions.RequestException as e:
-            print(f"Binance Futures request error for {symbol}: {e}")
-        except (ValueError, TypeError, KeyError) as e:
-            print(f"Binance Futures data error for {symbol}: {e}")
+            if data.get("error"):
+                print(f"Kraken error for {symbol}: {data['error']}")
+                continue
+            result = data.get("result", {})
+            if not result:
+                continue
+            first_key = next(iter(result))
+            last_price = result[first_key]["c"][0]
+            prices[symbol] = float(last_price)
         except Exception as e:
-            print(f"Unexpected Binance error for {symbol}: {e}")
+            print(f"Kraken request error for {symbol}: {e}")
     return prices
 
 
 def get_coingecko_prices(symbols):
     if not symbols:
         return {}
-    coin_ids = []
+    coin_id_to_symbols = {}
     for symbol in symbols:
-        symbol = symbol.upper()
-        if symbol in COINGECKO_IDS:
-            coin_ids.append(COINGECKO_IDS[symbol])
+        coin_id = COINGECKO_IDS.get(symbol)
+        if coin_id:
+            coin_id_to_symbols.setdefault(coin_id, []).append(symbol)
         else:
             print(f"No CoinGecko mapping for {symbol}")
-    if not coin_ids:
+    if not coin_id_to_symbols:
         return {}
     url = "https://api.coingecko.com/api/v3/simple/price"
-    params = {"ids": ",".join(sorted(set(coin_ids))), "vs_currencies": "usd"}
+    params = {"ids": ",".join(sorted(coin_id_to_symbols.keys())), "vs_currencies": "usd"}
+    prices = {}
     try:
         r = requests.get(url, params=params, timeout=15)
         print(f"CoinGecko response: {r.status_code} {r.text}")
         r.raise_for_status()
         data = r.json()
-        prices = {}
-        for symbol in symbols:
-            symbol = symbol.upper()
-            coin_id = COINGECKO_IDS.get(symbol)
-            if coin_id and coin_id in data and "usd" in data[coin_id]:
-                prices[symbol] = float(data[coin_id]["usd"])
-        return prices
+        for coin_id, syms in coin_id_to_symbols.items():
+            if coin_id in data and "usd" in data[coin_id]:
+                price = float(data[coin_id]["usd"])
+                for symbol in syms:
+                    prices[symbol] = price
     except requests.exceptions.RequestException as e:
         print(f"CoinGecko request error: {e}")
     except (ValueError, TypeError, KeyError) as e:
         print(f"CoinGecko data error: {e}")
     except Exception as e:
         print(f"Unexpected CoinGecko error: {e}")
-    return {}
+    return prices
 
 
 def get_prices(symbols):
+    """اول Kraken (دقیق‌تر)، بعد CoinGecko برای بقیه."""
     if not symbols:
         return {}
-    symbols = [symbol.upper() for symbol in symbols if symbol]
-    prices = get_binance_futures_prices(symbols)
-    missing_symbols = [symbol for symbol in symbols if symbol not in prices]
-    if missing_symbols:
-        print("Binance Futures unavailable for:", missing_symbols)
-        print("Trying CoinGecko fallback...")
-        fallback_prices = get_coingecko_prices(missing_symbols)
-        for symbol, price in fallback_prices.items():
-            prices[symbol] = price
-            print(f"CoinGecko fallback price for {symbol}: {price}")
+    symbols = list({s.upper() for s in symbols if s})
+
+    kraken_candidates = [s for s in symbols if s in KRAKEN_PAIRS]
+    prices = get_kraken_prices(kraken_candidates)
+
+    missing = [s for s in symbols if s not in prices]
+    if missing:
+        print("Trying CoinGecko for:", missing)
+        cg_prices = get_coingecko_prices(missing)
+        prices.update(cg_prices)
+
     return prices
 
 
@@ -215,44 +240,49 @@ def numbered_alerts_list(state):
     return "\n".join(lines), ordered_ids
 
 
-def add_alert(state, symbol, target_price):
-    prices = get_prices([symbol])
-    if symbol not in prices:
-        return f"❌ قیمت {symbol} در Binance Futures و CoinGecko پیدا نشد."
-    current_price = prices[symbol]
-    direction = "above" if target_price >= current_price else "below"
-    alert_id = f"{symbol}_{direction}_{format_price(target_price)}"
-    state["alerts"][alert_id] = {
-        "symbol": symbol,
-        "direction": direction,
-        "price": target_price,
-        "triggered": False,
-    }
-    arrow = "بالاتر رفت از" if direction == "above" else "پایین‌تر آمد از"
-    return (
-        f"✅ آلارم ثبت شد\n{symbol}: وقتی قیمت {arrow} "
-        f"{format_price(target_price)} دلار\n(قیمت فعلی: {format_price(current_price)})"
-    )
-
-
 def process_add_lines(state, text):
-    """هر خط از پیام رو به‌عنوان یه آلارم جدا پردازش می‌کنه."""
     lines = [line.strip() for line in text.splitlines() if line.strip()]
-    replies = []
-    any_valid = False
+    parsed_list = []
+    invalid_lines = []
     for line in lines:
         parsed = parse_alert_command(line)
         if parsed is None:
-            replies.append(f"❌ نامعتبر: {line}")
+            invalid_lines.append(line)
         else:
-            any_valid = True
-            symbol, target_price = parsed
-            replies.append(add_alert(state, symbol, target_price))
+            parsed_list.append(parsed)
+
+    symbols_needed = list({symbol for symbol, _ in parsed_list})
+    prices = get_prices(symbols_needed)
+
+    replies = []
+    any_valid = False
+    for symbol, target_price in parsed_list:
+        if symbol not in prices:
+            replies.append(f"❌ قیمت {symbol} پیدا نشد (ممکنه نماد پشتیبانی نشه).")
+            continue
+        any_valid = True
+        current_price = prices[symbol]
+        direction = "above" if target_price >= current_price else "below"
+        alert_id = f"{symbol}_{direction}_{format_price(target_price)}"
+        state["alerts"][alert_id] = {
+            "symbol": symbol,
+            "direction": direction,
+            "price": target_price,
+            "triggered": False,
+        }
+        arrow = "بالاتر رفت از" if direction == "above" else "پایین‌تر آمد از"
+        replies.append(
+            f"✅ آلارم ثبت شد\n{symbol}: وقتی قیمت {arrow} "
+            f"{format_price(target_price)} دلار\n(قیمت فعلی: {format_price(current_price)})"
+        )
+
+    for line in invalid_lines:
+        replies.append(f"❌ نامعتبر: {line}")
+
     return "\n\n".join(replies), any_valid
 
 
 def parse_delete_numbers(text, max_n):
-    """همه‌ی شماره‌های موجود در پیام رو استخراج می‌کنه (با فاصله، ویرگول، یا 'و' جدا شده باشن)."""
     numbers = re.findall(r"\d+", text)
     result = []
     seen = set()
