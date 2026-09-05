@@ -2,34 +2,9 @@
   "btc_up_70000": {
     "triggered": true
   },
-  "alerts": {
-    "XRPUSDT_above_1.4058": {
-      "symbol": "XRPUSDT",
-      "direction": "above",
-      "price": 1.4058,
-      "triggered": true
-    },
-    "XAUUSDT_above_4439": {
-      "symbol": "XAUUSDT",
-      "direction": "above",
-      "price": 4439.0,
-      "triggered": false
-    },
-    "ONDOUSDT_above_0.3684": {
-      "symbol": "ONDOUSDT",
-      "direction": "above",
-      "price": 0.3684,
-      "triggered": true
-    },
-    "AAVEUSDT_above_130.45": {
-      "symbol": "AAVEUSDT",
-      "direction": "above",
-      "price": 130.45,
-      "triggered": true
-    }
-  },
-  "mode": "awaiting_delete_all",
-  "last_update_id": 78,
+  "alerts": {},
+  "mode": null,
+  "last_update_id": 79,
   "delete_order": [],
   "favorites": [
     "BTCUSDT",
