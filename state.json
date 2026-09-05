@@ -28,8 +28,8 @@
       "triggered": true
     }
   },
-  "mode": null,
-  "last_update_id": 77,
+  "mode": "awaiting_delete_all",
+  "last_update_id": 78,
   "delete_order": [],
   "favorites": [
     "BTCUSDT",
