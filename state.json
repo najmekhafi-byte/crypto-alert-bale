@@ -43,7 +43,7 @@
       "symbol": "SOLUSDT",
       "direction": "above",
       "price": 103.39,
-      "triggered": false
+      "triggered": true
     }
   },
   "mode": null,
