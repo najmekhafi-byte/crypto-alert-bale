@@ -28,14 +28,14 @@
       "triggered": true
     }
   },
-  "mode": "fav_menu",
-  "last_update_id": 74,
+  "mode": "awaiting_fav_price",
+  "last_update_id": 75,
   "delete_order": [],
   "favorites": [
     "BTCUSDT",
     "ETHUSDT",
     "XAUUSDT"
   ],
-  "selected_symbol": null,
+  "selected_symbol": "BTCUSDT",
   "fav_delete_order": []
 }
