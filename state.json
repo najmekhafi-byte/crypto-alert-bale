@@ -19,7 +19,7 @@
       "symbol": "BTCUSDT",
       "direction": "above",
       "price": 80165.0,
-      "triggered": false
+      "triggered": true
     },
     "ETHUSDT_below_2474": {
       "symbol": "ETHUSDT",
