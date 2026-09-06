@@ -79,7 +79,7 @@
       "symbol": "ONDOUSDT",
       "direction": "above",
       "price": 0.3811,
-      "triggered": false
+      "triggered": true
     },
     "UNIUSDT_above_7.055": {
       "symbol": "UNIUSDT",
@@ -103,7 +103,7 @@
       "symbol": "LDOUSDT",
       "direction": "above",
       "price": 0.4105,
-      "triggered": false
+      "triggered": true
     },
     "ORDIUSDT_below_0.169": {
       "symbol": "ORDIUSDT",
