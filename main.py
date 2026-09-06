@@ -62,7 +62,7 @@ def get_top100_id_map():
     try:
         r = requests.get(
             "https://api.coingecko.com/api/v3/coins/markets",
-            params={"vs_currency": "usd", "order": "market_cap_desc", "per_page": 100, "page": 1},
+            params={"vs_currency": "usd", "order": "market_cap_desc", "per_page": 300, "page": 1},
             timeout=20,
         )
         r.raise_for_status()
