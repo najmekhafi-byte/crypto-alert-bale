@@ -56,10 +56,52 @@
       "direction": "above",
       "price": 80180.0,
       "triggered": false
+    },
+    "ADAUSDT_above_0.2213": {
+      "symbol": "ADAUSDT",
+      "direction": "above",
+      "price": 0.2213,
+      "triggered": false
+    },
+    "SOLUSDT_above_107.6": {
+      "symbol": "SOLUSDT",
+      "direction": "above",
+      "price": 107.6,
+      "triggered": false
+    },
+    "HYPEUSDT_above_88.6": {
+      "symbol": "HYPEUSDT",
+      "direction": "above",
+      "price": 88.6,
+      "triggered": false
+    },
+    "ONDOUSDT_above_0.3811": {
+      "symbol": "ONDOUSDT",
+      "direction": "above",
+      "price": 0.3811,
+      "triggered": false
+    },
+    "UNIUSDT_above_7.055": {
+      "symbol": "UNIUSDT",
+      "direction": "above",
+      "price": 7.055,
+      "triggered": false
+    },
+    "SUIUSDT_above_0.8073": {
+      "symbol": "SUIUSDT",
+      "direction": "above",
+      "price": 0.8073,
+      "triggered": false
+    },
+    "JUPUSDT_above_0.2781": {
+      "symbol": "JUPUSDT",
+      "direction": "above",
+      "price": 0.2781,
+      "triggered": false
     }
   },
   "mode": null,
-  "last_update_id": 82,
+  "last_update_id": 83,
   "delete_order": [],
   "favorites": [
     "BTCUSDT",
