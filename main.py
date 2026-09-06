@@ -60,20 +60,21 @@ def get_top100_id_map():
         return _TOP100_ID_MAP
     id_map = {}
     try:
-        r = requests.get(
-            "https://api.coingecko.com/api/v3/coins/markets",
-            params={"vs_currency": "usd", "order": "market_cap_desc", "per_page": 300, "page": 1},
-            timeout=20,
-        )
-        r.raise_for_status()
-        for coin in r.json():
-            symbol = coin.get("symbol", "").upper() + "USDT"
-            coin_id = coin.get("id")
-            if symbol and coin_id and symbol not in id_map:
-                id_map[symbol] = coin_id
-        print(f"Top100 list loaded: {len(id_map)} coins")
+        for page in (1, 2):
+            r = requests.get(
+                "https://api.coingecko.com/api/v3/coins/markets",
+                params={"vs_currency": "usd", "order": "market_cap_desc", "per_page": 250, "page": page},
+                timeout=20,
+            )
+            r.raise_for_status()
+            for coin in r.json():
+                symbol = coin.get("symbol", "").upper() + "USDT"
+                coin_id = coin.get("id")
+                if symbol and coin_id and symbol not in id_map:
+                    id_map[symbol] = coin_id
+        print(f"Top list loaded: {len(id_map)} coins")
     except Exception as e:
-        print("Error fetching top100 list:", e)
+        print("Error fetching top list:", e)
     _TOP100_ID_MAP = id_map
     return _TOP100_ID_MAP
 
