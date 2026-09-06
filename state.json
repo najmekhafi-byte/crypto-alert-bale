@@ -91,7 +91,7 @@
       "symbol": "SUIUSDT",
       "direction": "above",
       "price": 0.8073,
-      "triggered": false
+      "triggered": true
     },
     "JUPUSDT_above_0.2781": {
       "symbol": "JUPUSDT",
