@@ -250,24 +250,23 @@ def parse_alert_command(text):
 
 def numbered_alerts_list(state):
     alerts = state.get("alerts", {})
-    if not alerts:
-        return "هیچ آلارم فعالی ندارید.", []
-    ordered_ids = list(alerts.keys())
-    symbols = list({a.get("symbol", a.get("coin")) for a in alerts.values()})
+    pending_ids = [aid for aid, a in alerts.items() if not a["triggered"]]
+    if not pending_ids:
+        return "هیچ آلارم در انتظاری ندارید.", []
+    symbols = list({alerts[aid].get("symbol", alerts[aid].get("coin")) for aid in pending_ids})
     prices = get_prices(symbols)
-    lines = ["📋 آلارم‌های فعال:"]
-    for i, aid in enumerate(ordered_ids, start=1):
+    lines = ["📋 آلارم‌های در انتظار:"]
+    for i, aid in enumerate(pending_ids, start=1):
         a = alerts[aid]
         symbol = a.get("symbol", a.get("coin", ""))
-        status = "✅ ارسال شده" if a["triggered"] else "⏳ در انتظار"
         arrow = "بالای" if a["direction"] == "above" else "زیر"
         current = prices.get(symbol)
-        if current and not a["triggered"]:
+        if current:
             dist = pct_distance(current, a["price"])
-            lines.append(f"{i}. {symbol} {arrow} {a['price']} — {status} (فاصله: {dist})")
+            lines.append(f"{i}. {symbol} {arrow} {a['price']} (فاصله: {dist})")
         else:
-            lines.append(f"{i}. {symbol} {arrow} {a['price']} — {status}")
-    return "\n".join(lines), ordered_ids
+            lines.append(f"{i}. {symbol} {arrow} {a['price']}")
+    return "\n".join(lines), pending_ids
 
 
 def create_alert_reply(state, symbol, target_price, current_price):
