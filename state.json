@@ -98,10 +98,22 @@
       "direction": "above",
       "price": 0.2781,
       "triggered": false
+    },
+    "LDOUSDT_above_0.4105": {
+      "symbol": "LDOUSDT",
+      "direction": "above",
+      "price": 0.4105,
+      "triggered": false
+    },
+    "ORDIUSDT_below_0.169": {
+      "symbol": "ORDIUSDT",
+      "direction": "below",
+      "price": 0.169,
+      "triggered": false
     }
   },
   "mode": null,
-  "last_update_id": 84,
+  "last_update_id": 86,
   "delete_order": [],
   "favorites": [
     "BTCUSDT",
