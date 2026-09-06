@@ -55,7 +55,7 @@
       "symbol": "BTCUSDT",
       "direction": "above",
       "price": 80180.0,
-      "triggered": false
+      "triggered": true
     },
     "ADAUSDT_above_0.2213": {
       "symbol": "ADAUSDT",
