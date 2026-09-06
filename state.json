@@ -85,7 +85,7 @@
       "symbol": "UNIUSDT",
       "direction": "above",
       "price": 7.055,
-      "triggered": false
+      "triggered": true
     },
     "SUIUSDT_above_0.8073": {
       "symbol": "SUIUSDT",
