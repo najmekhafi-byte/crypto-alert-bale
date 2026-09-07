@@ -116,10 +116,52 @@
       "direction": "below",
       "price": 0.00422,
       "triggered": false
+    },
+    "BTCUSDT_below_78815": {
+      "symbol": "BTCUSDT",
+      "direction": "below",
+      "price": 78815.0,
+      "triggered": false
+    },
+    "BTCUSDT_above_79750": {
+      "symbol": "BTCUSDT",
+      "direction": "above",
+      "price": 79750.0,
+      "triggered": false
+    },
+    "HYPEUSDT_above_87.11": {
+      "symbol": "HYPEUSDT",
+      "direction": "above",
+      "price": 87.11,
+      "triggered": false
+    },
+    "HYPEUSDT_above_87.541": {
+      "symbol": "HYPEUSDT",
+      "direction": "above",
+      "price": 87.541,
+      "triggered": false
+    },
+    "ONDOUSDT_above_0.394": {
+      "symbol": "ONDOUSDT",
+      "direction": "above",
+      "price": 0.394,
+      "triggered": false
+    },
+    "TAOUSDT_above_268.9": {
+      "symbol": "TAOUSDT",
+      "direction": "above",
+      "price": 268.9,
+      "triggered": false
+    },
+    "LINKUSDT_above_13.5": {
+      "symbol": "LINKUSDT",
+      "direction": "above",
+      "price": 13.5,
+      "triggered": false
     }
   },
   "mode": null,
-  "last_update_id": 90,
+  "last_update_id": 91,
   "delete_order": [],
   "favorites": [
     "BTCUSDT",
