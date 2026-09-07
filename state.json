@@ -139,7 +139,7 @@
       "symbol": "HYPEUSDT",
       "direction": "above",
       "price": 87.541,
-      "triggered": false
+      "triggered": true
     },
     "ONDOUSDT_above_0.394": {
       "symbol": "ONDOUSDT",
