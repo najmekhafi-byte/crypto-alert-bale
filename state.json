@@ -187,7 +187,7 @@
       "symbol": "HYPEUSDT",
       "direction": "above",
       "price": 88.034,
-      "triggered": false
+      "triggered": true
     }
   },
   "mode": null,
