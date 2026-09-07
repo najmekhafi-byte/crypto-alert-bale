@@ -133,7 +133,7 @@
       "symbol": "HYPEUSDT",
       "direction": "above",
       "price": 87.11,
-      "triggered": false
+      "triggered": true
     },
     "HYPEUSDT_above_87.541": {
       "symbol": "HYPEUSDT",
@@ -175,7 +175,7 @@
       "symbol": "IMXUSDT",
       "direction": "above",
       "price": 0.1327,
-      "triggered": false
+      "triggered": true
     }
   },
   "mode": null,
