@@ -110,10 +110,16 @@
       "direction": "below",
       "price": 0.169,
       "triggered": false
+    },
+    "JASMYUSDT_below_0.00422": {
+      "symbol": "JASMYUSDT",
+      "direction": "below",
+      "price": 0.00422,
+      "triggered": false
     }
   },
   "mode": null,
-  "last_update_id": 88,
+  "last_update_id": 90,
   "delete_order": [],
   "favorites": [
     "BTCUSDT",
