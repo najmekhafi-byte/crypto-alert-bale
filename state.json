@@ -121,7 +121,7 @@
       "symbol": "BTCUSDT",
       "direction": "below",
       "price": 78815.0,
-      "triggered": false
+      "triggered": true
     },
     "BTCUSDT_above_79750": {
       "symbol": "BTCUSDT",
