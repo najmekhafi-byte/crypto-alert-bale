@@ -151,7 +151,7 @@
       "symbol": "TAOUSDT",
       "direction": "above",
       "price": 268.9,
-      "triggered": false
+      "triggered": true
     },
     "LINKUSDT_above_13.5": {
       "symbol": "LINKUSDT",
