@@ -158,10 +158,28 @@
       "direction": "above",
       "price": 13.5,
       "triggered": false
+    },
+    "DOTUSDT_above_0.98": {
+      "symbol": "DOTUSDT",
+      "direction": "above",
+      "price": 0.98,
+      "triggered": false
+    },
+    "ICPUSDT_below_2.874": {
+      "symbol": "ICPUSDT",
+      "direction": "below",
+      "price": 2.874,
+      "triggered": false
+    },
+    "IMXUSDT_above_0.1327": {
+      "symbol": "IMXUSDT",
+      "direction": "above",
+      "price": 0.1327,
+      "triggered": false
     }
   },
   "mode": null,
-  "last_update_id": 91,
+  "last_update_id": 92,
   "delete_order": [],
   "favorites": [
     "BTCUSDT",
