@@ -163,7 +163,7 @@
       "symbol": "DOTUSDT",
       "direction": "above",
       "price": 0.98,
-      "triggered": false
+      "triggered": true
     },
     "ICPUSDT_below_2.874": {
       "symbol": "ICPUSDT",
