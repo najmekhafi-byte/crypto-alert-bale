@@ -157,7 +157,7 @@
       "symbol": "LINKUSDT",
       "direction": "above",
       "price": 13.5,
-      "triggered": false
+      "triggered": true
     },
     "DOTUSDT_above_0.98": {
       "symbol": "DOTUSDT",
