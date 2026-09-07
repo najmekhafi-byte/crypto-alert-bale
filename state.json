@@ -176,10 +176,22 @@
       "direction": "above",
       "price": 0.1327,
       "triggered": true
+    },
+    "SOLUSDT_above_105.27": {
+      "symbol": "SOLUSDT",
+      "direction": "above",
+      "price": 105.27,
+      "triggered": false
+    },
+    "HYPEUSDT_above_88.034": {
+      "symbol": "HYPEUSDT",
+      "direction": "above",
+      "price": 88.034,
+      "triggered": false
     }
   },
   "mode": null,
-  "last_update_id": 92,
+  "last_update_id": 93,
   "delete_order": [],
   "favorites": [
     "BTCUSDT",
