@@ -181,7 +181,7 @@
       "symbol": "SOLUSDT",
       "direction": "above",
       "price": 105.27,
-      "triggered": false
+      "triggered": true
     },
     "HYPEUSDT_above_88.034": {
       "symbol": "HYPEUSDT",
