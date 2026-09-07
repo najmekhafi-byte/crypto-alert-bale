@@ -145,7 +145,7 @@
       "symbol": "ONDOUSDT",
       "direction": "above",
       "price": 0.394,
-      "triggered": false
+      "triggered": true
     },
     "TAOUSDT_above_268.9": {
       "symbol": "TAOUSDT",
