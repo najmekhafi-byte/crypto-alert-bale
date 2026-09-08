@@ -217,7 +217,7 @@
       "symbol": "SUIUSDT",
       "direction": "above",
       "price": 0.833,
-      "triggered": false
+      "triggered": true
     },
     "ICPUSDT_above_3.116": {
       "symbol": "ICPUSDT",
