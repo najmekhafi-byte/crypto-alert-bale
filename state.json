@@ -218,10 +218,16 @@
       "direction": "above",
       "price": 0.833,
       "triggered": false
+    },
+    "ICPUSDT_above_3.116": {
+      "symbol": "ICPUSDT",
+      "direction": "above",
+      "price": 3.116,
+      "triggered": false
     }
   },
   "mode": null,
-  "last_update_id": 96,
+  "last_update_id": 98,
   "delete_order": [],
   "favorites": [
     "BTCUSDT",
