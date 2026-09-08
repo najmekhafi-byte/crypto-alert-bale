@@ -230,10 +230,16 @@
       "direction": "above",
       "price": 0.1344,
       "triggered": false
+    },
+    "ONDOUSDT_above_0.386": {
+      "symbol": "ONDOUSDT",
+      "direction": "above",
+      "price": 0.386,
+      "triggered": false
     }
   },
   "mode": null,
-  "last_update_id": 99,
+  "last_update_id": 100,
   "delete_order": [],
   "favorites": [
     "BTCUSDT",
