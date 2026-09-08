@@ -224,10 +224,16 @@
       "direction": "above",
       "price": 3.116,
       "triggered": false
+    },
+    "IMXUSDT_above_0.1344": {
+      "symbol": "IMXUSDT",
+      "direction": "above",
+      "price": 0.1344,
+      "triggered": false
     }
   },
   "mode": null,
-  "last_update_id": 98,
+  "last_update_id": 99,
   "delete_order": [],
   "favorites": [
     "BTCUSDT",
