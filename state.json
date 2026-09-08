@@ -211,7 +211,7 @@
       "symbol": "LDOUSDT",
       "direction": "above",
       "price": 0.3956,
-      "triggered": false
+      "triggered": true
     },
     "SUIUSDT_above_0.833": {
       "symbol": "SUIUSDT",
