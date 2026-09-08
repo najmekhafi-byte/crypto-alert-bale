@@ -188,10 +188,34 @@
       "direction": "above",
       "price": 88.034,
       "triggered": true
+    },
+    "JUPUSDT_above_0.2465": {
+      "symbol": "JUPUSDT",
+      "direction": "above",
+      "price": 0.2465,
+      "triggered": false
+    },
+    "AAVEUSDT_above_132.3": {
+      "symbol": "AAVEUSDT",
+      "direction": "above",
+      "price": 132.3,
+      "triggered": false
+    },
+    "ONDOUSDT_above_0.382": {
+      "symbol": "ONDOUSDT",
+      "direction": "above",
+      "price": 0.382,
+      "triggered": false
+    },
+    "LDOUSDT_above_0.3956": {
+      "symbol": "LDOUSDT",
+      "direction": "above",
+      "price": 0.3956,
+      "triggered": false
     }
   },
   "mode": null,
-  "last_update_id": 93,
+  "last_update_id": 95,
   "delete_order": [],
   "favorites": [
     "BTCUSDT",
