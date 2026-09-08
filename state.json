@@ -241,7 +241,7 @@
       "symbol": "DOTUSDT",
       "direction": "above",
       "price": 1.24,
-      "triggered": false
+      "triggered": true
     }
   },
   "mode": null,
