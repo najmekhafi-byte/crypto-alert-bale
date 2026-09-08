@@ -205,7 +205,7 @@
       "symbol": "ONDOUSDT",
       "direction": "above",
       "price": 0.382,
-      "triggered": false
+      "triggered": true
     },
     "LDOUSDT_above_0.3956": {
       "symbol": "LDOUSDT",
