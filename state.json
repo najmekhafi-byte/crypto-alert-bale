@@ -236,10 +236,16 @@
       "direction": "above",
       "price": 0.386,
       "triggered": false
+    },
+    "DOTUSDT_above_1.24": {
+      "symbol": "DOTUSDT",
+      "direction": "above",
+      "price": 1.24,
+      "triggered": false
     }
   },
   "mode": null,
-  "last_update_id": 100,
+  "last_update_id": 101,
   "delete_order": [],
   "favorites": [
     "BTCUSDT",
