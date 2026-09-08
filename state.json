@@ -229,7 +229,7 @@
       "symbol": "IMXUSDT",
       "direction": "above",
       "price": 0.1344,
-      "triggered": false
+      "triggered": true
     },
     "ONDOUSDT_above_0.386": {
       "symbol": "ONDOUSDT",
