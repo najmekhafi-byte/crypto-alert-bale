@@ -212,10 +212,16 @@
       "direction": "above",
       "price": 0.3956,
       "triggered": false
+    },
+    "SUIUSDT_above_0.833": {
+      "symbol": "SUIUSDT",
+      "direction": "above",
+      "price": 0.833,
+      "triggered": false
     }
   },
   "mode": null,
-  "last_update_id": 95,
+  "last_update_id": 96,
   "delete_order": [],
   "favorites": [
     "BTCUSDT",
