@@ -115,7 +115,7 @@
       "symbol": "JASMYUSDT",
       "direction": "below",
       "price": 0.00422,
-      "triggered": false
+      "triggered": true
     },
     "BTCUSDT_below_78815": {
       "symbol": "BTCUSDT",
