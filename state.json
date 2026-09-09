@@ -193,7 +193,7 @@
       "symbol": "JUPUSDT",
       "direction": "above",
       "price": 0.2465,
-      "triggered": false
+      "triggered": true
     },
     "AAVEUSDT_above_132.3": {
       "symbol": "AAVEUSDT",
