@@ -253,7 +253,7 @@
       "symbol": "ICPUSDT",
       "direction": "below",
       "price": 2.82,
-      "triggered": false
+      "triggered": true
     },
     "NEARUSDT_above_2.55": {
       "symbol": "NEARUSDT",
