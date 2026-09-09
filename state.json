@@ -169,7 +169,7 @@
       "symbol": "ICPUSDT",
       "direction": "below",
       "price": 2.874,
-      "triggered": false
+      "triggered": true
     },
     "IMXUSDT_above_0.1327": {
       "symbol": "IMXUSDT",
