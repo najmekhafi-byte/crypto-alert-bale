@@ -259,7 +259,7 @@
       "symbol": "NEARUSDT",
       "direction": "above",
       "price": 2.55,
-      "triggered": false
+      "triggered": true
     },
     "XAUUSDT_above_4437": {
       "symbol": "XAUUSDT",
