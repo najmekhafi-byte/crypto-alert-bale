@@ -337,7 +337,7 @@
       "symbol": "XAUUSDT",
       "direction": "above",
       "price": 4378.0,
-      "triggered": false
+      "triggered": true
     }
   },
   "mode": null,
