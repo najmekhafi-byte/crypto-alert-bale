@@ -296,10 +296,16 @@
       "direction": "below",
       "price": 11.28,
       "triggered": false
+    },
+    "DOTUSDT_below_1.034": {
+      "symbol": "DOTUSDT",
+      "direction": "below",
+      "price": 1.034,
+      "triggered": false
     }
   },
   "mode": null,
-  "last_update_id": 110,
+  "last_update_id": 111,
   "delete_order": [],
   "favorites": [
     "BTCUSDT",
