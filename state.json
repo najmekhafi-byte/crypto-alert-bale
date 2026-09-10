@@ -277,7 +277,7 @@
       "symbol": "SOLUSDT",
       "direction": "below",
       "price": 100.0,
-      "triggered": false
+      "triggered": true
     },
     "XRPUSDT_below_1.35": {
       "symbol": "XRPUSDT",
@@ -319,7 +319,7 @@
       "symbol": "DOGEUSDT",
       "direction": "below",
       "price": 0.08444,
-      "triggered": false
+      "triggered": true
     },
     "HBARUSDT_below_0.07271": {
       "symbol": "HBARUSDT",
