@@ -271,7 +271,7 @@
       "symbol": "JUPUSDT",
       "direction": "below",
       "price": 0.2244,
-      "triggered": false
+      "triggered": true
     },
     "SOLUSDT_below_100": {
       "symbol": "SOLUSDT",
