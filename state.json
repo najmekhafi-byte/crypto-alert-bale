@@ -314,10 +314,16 @@
       "direction": "above",
       "price": 0.8444,
       "triggered": false
+    },
+    "DOGEUSDT_below_0.08444": {
+      "symbol": "DOGEUSDT",
+      "direction": "below",
+      "price": 0.08444,
+      "triggered": false
     }
   },
   "mode": null,
-  "last_update_id": 113,
+  "last_update_id": 114,
   "delete_order": [],
   "favorites": [
     "BTCUSDT",
