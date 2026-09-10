@@ -272,10 +272,16 @@
       "direction": "below",
       "price": 0.2244,
       "triggered": false
+    },
+    "SOLUSDT_below_100": {
+      "symbol": "SOLUSDT",
+      "direction": "below",
+      "price": 100.0,
+      "triggered": false
     }
   },
   "mode": null,
-  "last_update_id": 106,
+  "last_update_id": 107,
   "delete_order": [],
   "favorites": [
     "BTCUSDT",
