@@ -278,10 +278,16 @@
       "direction": "below",
       "price": 100.0,
       "triggered": false
+    },
+    "XRPUSDT_below_1.35": {
+      "symbol": "XRPUSDT",
+      "direction": "below",
+      "price": 1.35,
+      "triggered": false
     }
   },
   "mode": null,
-  "last_update_id": 107,
+  "last_update_id": 108,
   "delete_order": [],
   "favorites": [
     "BTCUSDT",
