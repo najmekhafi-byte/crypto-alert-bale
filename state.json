@@ -284,10 +284,16 @@
       "direction": "below",
       "price": 1.35,
       "triggered": false
+    },
+    "UNIUSDT_below_5.77": {
+      "symbol": "UNIUSDT",
+      "direction": "below",
+      "price": 5.77,
+      "triggered": false
     }
   },
   "mode": null,
-  "last_update_id": 108,
+  "last_update_id": 109,
   "delete_order": [],
   "favorites": [
     "BTCUSDT",
