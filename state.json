@@ -283,7 +283,7 @@
       "symbol": "XRPUSDT",
       "direction": "below",
       "price": 1.35,
-      "triggered": false
+      "triggered": true
     },
     "UNIUSDT_below_5.77": {
       "symbol": "UNIUSDT",
