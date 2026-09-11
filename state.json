@@ -307,7 +307,7 @@
       "symbol": "ENAUSDT",
       "direction": "below",
       "price": 0.1399,
-      "triggered": false
+      "triggered": true
     },
     "DOGEUSDT_above_0.8444": {
       "symbol": "DOGEUSDT",
