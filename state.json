@@ -247,7 +247,7 @@
       "symbol": "LTCUSDT",
       "direction": "above",
       "price": 54.8,
-      "triggered": false
+      "triggered": true
     },
     "ICPUSDT_below_2.82": {
       "symbol": "ICPUSDT",
