@@ -349,7 +349,7 @@
       "symbol": "ONDOUSDT",
       "direction": "above",
       "price": 0.36,
-      "triggered": false
+      "triggered": true
     },
     "BNBUSDT_above_729.5": {
       "symbol": "BNBUSDT",
