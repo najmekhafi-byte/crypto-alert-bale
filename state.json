@@ -368,10 +368,16 @@
       "direction": "above",
       "price": 1.4,
       "triggered": false
+    },
+    "HYPEUSDT_above_82.124": {
+      "symbol": "HYPEUSDT",
+      "direction": "above",
+      "price": 82.124,
+      "triggered": false
     }
   },
   "mode": null,
-  "last_update_id": 122,
+  "last_update_id": 123,
   "delete_order": [],
   "favorites": [
     "BTCUSDT",
