@@ -355,7 +355,7 @@
       "symbol": "BNBUSDT",
       "direction": "above",
       "price": 729.5,
-      "triggered": false
+      "triggered": true
     },
     "JUPUSDT_below_0.2338": {
       "symbol": "JUPUSDT",
