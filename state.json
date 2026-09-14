@@ -337,7 +337,7 @@
       "symbol": "XRPUSDT",
       "direction": "above",
       "price": 1.4,
-      "triggered": false
+      "triggered": true
     },
     "HYPEUSDT_above_82.124": {
       "symbol": "HYPEUSDT",
