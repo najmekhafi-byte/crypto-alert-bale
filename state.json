@@ -362,10 +362,16 @@
       "direction": "above",
       "price": 102.2,
       "triggered": false
+    },
+    "XRPUSDT_above_1.4": {
+      "symbol": "XRPUSDT",
+      "direction": "above",
+      "price": 1.4,
+      "triggered": false
     }
   },
   "mode": null,
-  "last_update_id": 121,
+  "last_update_id": 122,
   "delete_order": [],
   "favorites": [
     "BTCUSDT",
