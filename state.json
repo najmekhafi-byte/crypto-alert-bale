@@ -386,10 +386,16 @@
       "direction": "above",
       "price": 729.5,
       "triggered": false
+    },
+    "JUPUSDT_below_0.2338": {
+      "symbol": "JUPUSDT",
+      "direction": "below",
+      "price": 0.2338,
+      "triggered": false
     }
   },
   "mode": null,
-  "last_update_id": 125,
+  "last_update_id": 126,
   "delete_order": [],
   "favorites": [
     "BTCUSDT",
