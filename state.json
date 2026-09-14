@@ -380,10 +380,16 @@
       "direction": "above",
       "price": 0.36,
       "triggered": false
+    },
+    "BNBUSDT_above_729.5": {
+      "symbol": "BNBUSDT",
+      "direction": "above",
+      "price": 729.5,
+      "triggered": false
     }
   },
   "mode": null,
-  "last_update_id": 124,
+  "last_update_id": 125,
   "delete_order": [],
   "favorites": [
     "BTCUSDT",
