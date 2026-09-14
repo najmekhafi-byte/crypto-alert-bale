@@ -400,9 +400,30 @@
       "triggered": false
     }
   },
-  "mode": null,
-  "last_update_id": 128,
-  "delete_order": [],
+  "mode": "awaiting_delete",
+  "last_update_id": 129,
+  "delete_order": [
+    "SOLUSDT_above_107.6",
+    "ORDIUSDT_below_0.169",
+    "BTCUSDT_above_79750",
+    "AAVEUSDT_above_132.3",
+    "ICPUSDT_above_3.116",
+    "ONDOUSDT_above_0.386",
+    "XAUUSDT_above_4437",
+    "UNIUSDT_below_5.77",
+    "DOGEUSDT_above_0.8444",
+    "HBARUSDT_below_0.07271",
+    "XAUUSDT_above_4320",
+    "BTCUSDT_above_78179",
+    "ADAUSDT_above_0.2143",
+    "SOLUSDT_above_102.2",
+    "XRPUSDT_above_1.4",
+    "HYPEUSDT_above_82.124",
+    "ONDOUSDT_above_0.36",
+    "BNBUSDT_above_729.5",
+    "JUPUSDT_below_0.2338",
+    "DOTUSDT_below_0.998"
+  ],
   "favorites": [
     "BTCUSDT",
     "ETHUSDT",
