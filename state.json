@@ -193,7 +193,7 @@
       "symbol": "AAVEUSDT",
       "direction": "above",
       "price": 132.3,
-      "triggered": false
+      "triggered": true
     },
     "ONDOUSDT_above_0.382": {
       "symbol": "ONDOUSDT",
