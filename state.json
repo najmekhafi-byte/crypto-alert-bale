@@ -331,7 +331,7 @@
       "symbol": "SOLUSDT",
       "direction": "above",
       "price": 102.2,
-      "triggered": false
+      "triggered": true
     },
     "XRPUSDT_above_1.4": {
       "symbol": "XRPUSDT",
