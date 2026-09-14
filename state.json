@@ -361,7 +361,7 @@
       "symbol": "JUPUSDT",
       "direction": "below",
       "price": 0.2338,
-      "triggered": false
+      "triggered": true
     },
     "DOTUSDT_below_0.998": {
       "symbol": "DOTUSDT",
