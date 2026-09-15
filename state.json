@@ -367,7 +367,7 @@
       "symbol": "DOTUSDT",
       "direction": "below",
       "price": 0.998,
-      "triggered": false
+      "triggered": true
     }
   },
   "mode": null,
