@@ -368,11 +368,24 @@
       "direction": "below",
       "price": 0.998,
       "triggered": true
+    },
+    "ZECUSDT_below_1152": {
+      "symbol": "ZECUSDT",
+      "direction": "below",
+      "price": 1152.0,
+      "triggered": false
     }
   },
-  "mode": null,
-  "last_update_id": 134,
-  "delete_order": [],
+  "mode": "awaiting_delete",
+  "last_update_id": 136,
+  "delete_order": [
+    "SOLUSDT_above_107.6",
+    "BTCUSDT_above_79750",
+    "XAUUSDT_above_4437",
+    "UNIUSDT_below_5.77",
+    "HBARUSDT_below_0.07271",
+    "ZECUSDT_below_1152"
+  ],
   "favorites": [
     "BTCUSDT",
     "ETHUSDT",
