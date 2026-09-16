@@ -63,12 +63,6 @@
       "price": 0.2213,
       "triggered": true
     },
-    "SOLUSDT_above_107.6": {
-      "symbol": "SOLUSDT",
-      "direction": "above",
-      "price": 107.6,
-      "triggered": false
-    },
     "HYPEUSDT_above_88.6": {
       "symbol": "HYPEUSDT",
       "direction": "above",
@@ -116,12 +110,6 @@
       "direction": "below",
       "price": 78815.0,
       "triggered": true
-    },
-    "BTCUSDT_above_79750": {
-      "symbol": "BTCUSDT",
-      "direction": "above",
-      "price": 79750.0,
-      "triggered": false
     },
     "HYPEUSDT_above_87.11": {
       "symbol": "HYPEUSDT",
@@ -243,12 +231,6 @@
       "price": 2.55,
       "triggered": true
     },
-    "XAUUSDT_above_4437": {
-      "symbol": "XAUUSDT",
-      "direction": "above",
-      "price": 4437.0,
-      "triggered": false
-    },
     "JUPUSDT_below_0.2244": {
       "symbol": "JUPUSDT",
       "direction": "below",
@@ -266,12 +248,6 @@
       "direction": "below",
       "price": 1.35,
       "triggered": true
-    },
-    "UNIUSDT_below_5.77": {
-      "symbol": "UNIUSDT",
-      "direction": "below",
-      "price": 5.77,
-      "triggered": false
     },
     "LINKUSDT_below_11.28": {
       "symbol": "LINKUSDT",
@@ -376,16 +352,9 @@
       "triggered": false
     }
   },
-  "mode": "awaiting_delete",
-  "last_update_id": 136,
-  "delete_order": [
-    "SOLUSDT_above_107.6",
-    "BTCUSDT_above_79750",
-    "XAUUSDT_above_4437",
-    "UNIUSDT_below_5.77",
-    "HBARUSDT_below_0.07271",
-    "ZECUSDT_below_1152"
-  ],
+  "mode": null,
+  "last_update_id": 137,
+  "delete_order": [],
   "favorites": [
     "BTCUSDT",
     "ETHUSDT",
