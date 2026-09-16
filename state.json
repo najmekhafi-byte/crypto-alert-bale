@@ -277,7 +277,7 @@
       "symbol": "HBARUSDT",
       "direction": "below",
       "price": 0.07271,
-      "triggered": false
+      "triggered": true
     },
     "NEARUSDT_below_2.336": {
       "symbol": "NEARUSDT",
