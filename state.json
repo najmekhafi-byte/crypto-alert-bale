@@ -319,7 +319,7 @@
       "symbol": "XAUUSDT",
       "direction": "above",
       "price": 4320.0,
-      "triggered": false
+      "triggered": true
     },
     "ADAUSDT_above_0.2143": {
       "symbol": "ADAUSDT",
