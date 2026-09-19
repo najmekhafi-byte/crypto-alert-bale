@@ -350,10 +350,16 @@
       "direction": "below",
       "price": 1152.0,
       "triggered": false
+    },
+    "ENAUSDT_above_0.2194": {
+      "symbol": "ENAUSDT",
+      "direction": "above",
+      "price": 0.2194,
+      "triggered": false
     }
   },
   "mode": null,
-  "last_update_id": 137,
+  "last_update_id": 138,
   "delete_order": [],
   "favorites": [
     "BTCUSDT",
