@@ -364,9 +364,13 @@
       "triggered": false
     }
   },
-  "mode": null,
-  "last_update_id": 139,
-  "delete_order": [],
+  "mode": "awaiting_delete",
+  "last_update_id": 140,
+  "delete_order": [
+    "ZECUSDT_below_1152",
+    "ENAUSDT_above_0.2194",
+    "ORDIUSDT_above_4.9"
+  ],
   "favorites": [
     "BTCUSDT",
     "ETHUSDT",
