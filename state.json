@@ -356,10 +356,16 @@
       "direction": "above",
       "price": 0.2194,
       "triggered": false
+    },
+    "ORDIUSDT_above_4.9": {
+      "symbol": "ORDIUSDT",
+      "direction": "above",
+      "price": 4.9,
+      "triggered": false
     }
   },
   "mode": null,
-  "last_update_id": 138,
+  "last_update_id": 139,
   "delete_order": [],
   "favorites": [
     "BTCUSDT",
