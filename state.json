@@ -355,7 +355,7 @@
       "symbol": "ENAUSDT",
       "direction": "above",
       "price": 0.2194,
-      "triggered": false
+      "triggered": true
     },
     "ORDIUSDT_above_4.9": {
       "symbol": "ORDIUSDT",
