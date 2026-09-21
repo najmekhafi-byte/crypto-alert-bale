@@ -373,7 +373,7 @@
       "symbol": "XAUUSDT",
       "direction": "below",
       "price": 4335.0,
-      "triggered": false
+      "triggered": true
     },
     "BTCUSDT_above_82145": {
       "symbol": "BTCUSDT",
