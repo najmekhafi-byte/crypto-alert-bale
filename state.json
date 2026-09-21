@@ -368,10 +368,16 @@
       "direction": "above",
       "price": 3.823,
       "triggered": true
+    },
+    "XAUUSDT_below_4335": {
+      "symbol": "XAUUSDT",
+      "direction": "below",
+      "price": 4335.0,
+      "triggered": false
     }
   },
   "mode": null,
-  "last_update_id": 144,
+  "last_update_id": 145,
   "delete_order": [],
   "favorites": [
     "BTCUSDT",
