@@ -361,7 +361,7 @@
       "symbol": "ORDIUSDT",
       "direction": "above",
       "price": 4.9,
-      "triggered": false
+      "triggered": true
     },
     "NEARUSDT_above_3.823": {
       "symbol": "NEARUSDT",
