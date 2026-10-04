@@ -391,7 +391,7 @@
       "symbol": "BNBUSDT",
       "direction": "above",
       "price": 792.0,
-      "triggered": false
+      "triggered": true
     },
     "NOTUSDT_above_0.00051": {
       "symbol": "NOTUSDT",
