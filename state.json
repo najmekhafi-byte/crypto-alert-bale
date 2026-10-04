@@ -392,10 +392,16 @@
       "direction": "above",
       "price": 792.0,
       "triggered": false
+    },
+    "NOTUSDT_above_0.00051": {
+      "symbol": "NOTUSDT",
+      "direction": "above",
+      "price": 0.00051,
+      "triggered": false
     }
   },
   "mode": null,
-  "last_update_id": 153,
+  "last_update_id": 154,
   "delete_order": [],
   "favorites": [
     "BTCUSDT",
