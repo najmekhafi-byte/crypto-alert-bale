@@ -1,6 +1,7 @@
 import json
 import os
 import re
+import time
 import requests
 
 BALE_BOT_TOKEN = os.environ.get("BALE_BOT_TOKEN")
@@ -8,6 +9,8 @@ BALE_CHAT_ID = os.environ.get("BALE_CHAT_ID")
 NTFY_TOPIC = os.environ.get("NTFY_TOPIC")
 
 STATE_FILE = "state.json"
+TOP_LIST_CACHE_FILE = "top_list_cache.json"
+TOP_LIST_CACHE_SECONDS = 900
 
 MENU_KEYBOARD = {
     "keyboard": [
@@ -44,6 +47,7 @@ KRAKEN_PAIRS = {
     "SHIBUSDT": "SHIBUSD",
     "LINKUSDT": "LINKUSD",
     "AVAXUSDT": "AVAXUSD",
+    "ONDOUSDT": "ONDOUSD",
 }
 
 MANUAL_COINGECKO_IDS = {
@@ -58,6 +62,20 @@ def get_top100_id_map():
     global _TOP100_ID_MAP
     if _TOP100_ID_MAP is not None:
         return _TOP100_ID_MAP
+
+    now = time.time()
+
+    if os.path.exists(TOP_LIST_CACHE_FILE):
+        try:
+            with open(TOP_LIST_CACHE_FILE, "r", encoding="utf-8") as f:
+                cached = json.load(f)
+            if now - cached.get("fetched_at", 0) < TOP_LIST_CACHE_SECONDS:
+                _TOP100_ID_MAP = cached.get("id_map", {})
+                print(f"Using cached top list: {len(_TOP100_ID_MAP)} coins")
+                return _TOP100_ID_MAP
+        except Exception as e:
+            print("Error reading top list cache:", e)
+
     id_map = {}
     try:
         for page in (1, 2):
@@ -72,9 +90,19 @@ def get_top100_id_map():
                 coin_id = coin.get("id")
                 if symbol and coin_id and symbol not in id_map:
                     id_map[symbol] = coin_id
-        print(f"Top list loaded: {len(id_map)} coins")
+        print(f"Top list loaded fresh: {len(id_map)} coins")
+        with open(TOP_LIST_CACHE_FILE, "w", encoding="utf-8") as f:
+            json.dump({"fetched_at": now, "id_map": id_map}, f)
     except Exception as e:
         print("Error fetching top list:", e)
+        if os.path.exists(TOP_LIST_CACHE_FILE):
+            try:
+                with open(TOP_LIST_CACHE_FILE, "r", encoding="utf-8") as f:
+                    id_map = json.load(f).get("id_map", {})
+                print("Falling back to stale cache after fetch error")
+            except Exception:
+                pass
+
     _TOP100_ID_MAP = id_map
     return _TOP100_ID_MAP
 
@@ -297,18 +325,18 @@ def process_add_lines(state, text):
     symbols_needed = list({symbol for symbol, _ in parsed_list})
     prices = get_prices(symbols_needed)
 
-    replies, any_valid = [], False
+    replies, any_parsed = [], False
     for symbol, target_price in parsed_list:
+        any_parsed = True
         if symbol not in prices:
-            replies.append(f"❌ قیمت {symbol} پیدا نشد (ممکنه نماد پشتیبانی نشه).")
+            replies.append(f"❌ قیمت {symbol} پیدا نشد (ممکنه نماد پشتیبانی نشه یا موقتاً محدودیت خورده باشیم — چند دقیقه دیگه دوباره امتحان کنید).")
             continue
-        any_valid = True
         replies.append(create_alert_reply(state, symbol, target_price, prices[symbol]))
 
     for line in invalid_lines:
         replies.append(f"❌ نامعتبر: {line}")
 
-    return "\n\n".join(replies), any_valid
+    return "\n\n".join(replies), any_parsed
 
 
 def parse_delete_numbers(text, max_n):
@@ -540,9 +568,9 @@ def process_commands(state):
                 send_bale_message("لطفاً شماره‌ی آلارم(ها) رو بفرستید (مثلاً: 1 3 5)")
             continue
 
-        reply, any_valid = process_add_lines(state, text)
+        reply, any_parsed = process_add_lines(state, text)
         state["mode"] = None
-        if not any_valid:
+        if not any_parsed:
             send_bale_message(
                 "متوجه نشدم 🙁\nفرمت صحیح:\nنماد ارز قیمت\n\nمثال:\nBTCUSDT 100000\n\n"
                 "برای چند آلارم هم‌زمان، هر خط یه آلارم:\nBTCUSDT 77000\nETHUSDT 4000"
