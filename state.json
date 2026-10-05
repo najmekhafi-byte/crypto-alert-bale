@@ -403,7 +403,7 @@
       "symbol": "LINKUSDT",
       "direction": "below",
       "price": 14.0,
-      "triggered": false
+      "triggered": true
     },
     "RENDERUSDT_below_1.96": {
       "symbol": "RENDERUSDT",
