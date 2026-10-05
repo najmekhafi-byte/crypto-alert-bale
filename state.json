@@ -409,7 +409,7 @@
       "symbol": "RENDERUSDT",
       "direction": "below",
       "price": 1.96,
-      "triggered": false
+      "triggered": true
     }
   },
   "mode": null,
