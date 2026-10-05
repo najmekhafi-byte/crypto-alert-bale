@@ -397,7 +397,7 @@
       "symbol": "NOTUSDT",
       "direction": "above",
       "price": 0.00051,
-      "triggered": false
+      "triggered": true
     },
     "LINKUSDT_below_14": {
       "symbol": "LINKUSDT",
