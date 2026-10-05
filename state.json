@@ -404,10 +404,16 @@
       "direction": "below",
       "price": 14.0,
       "triggered": false
+    },
+    "RENDERUSDT_below_1.96": {
+      "symbol": "RENDERUSDT",
+      "direction": "below",
+      "price": 1.96,
+      "triggered": false
     }
   },
   "mode": null,
-  "last_update_id": 155,
+  "last_update_id": 156,
   "delete_order": [],
   "favorites": [
     "BTCUSDT",
