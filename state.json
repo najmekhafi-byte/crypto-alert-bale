@@ -410,10 +410,16 @@
       "direction": "below",
       "price": 1.96,
       "triggered": true
+    },
+    "ADAUSDT_above_0.3": {
+      "symbol": "ADAUSDT",
+      "direction": "above",
+      "price": 0.3,
+      "triggered": false
     }
   },
   "mode": null,
-  "last_update_id": 156,
+  "last_update_id": 157,
   "delete_order": [],
   "favorites": [
     "BTCUSDT",
