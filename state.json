@@ -345,12 +345,6 @@
       "price": 0.998,
       "triggered": true
     },
-    "ZECUSDT_below_1152": {
-      "symbol": "ZECUSDT",
-      "direction": "below",
-      "price": 1152.0,
-      "triggered": false
-    },
     "ENAUSDT_above_0.2194": {
       "symbol": "ENAUSDT",
       "direction": "above",
@@ -381,12 +375,6 @@
       "price": 82145.0,
       "triggered": true
     },
-    "XRPUSDT_below_1.44": {
-      "symbol": "XRPUSDT",
-      "direction": "below",
-      "price": 1.44,
-      "triggered": false
-    },
     "BNBUSDT_above_792": {
       "symbol": "BNBUSDT",
       "direction": "above",
@@ -410,12 +398,6 @@
       "direction": "below",
       "price": 1.96,
       "triggered": true
-    },
-    "ADAUSDT_above_0.3": {
-      "symbol": "ADAUSDT",
-      "direction": "above",
-      "price": 0.3,
-      "triggered": false
     },
     "NEARUSDT_below_5.092": {
       "symbol": "NEARUSDT",
@@ -443,15 +425,9 @@
       "note": "تست یادداشت برای ازمایش ربات"
     }
   },
-  "mode": "awaiting_delete",
-  "last_update_id": 163,
-  "delete_order": [
-    "ZECUSDT_below_1152",
-    "XRPUSDT_below_1.44",
-    "ADAUSDT_above_0.3",
-    "HBARUSDT_below_0.09096",
-    "HBARUSDT_below_0.0926"
-  ],
+  "mode": null,
+  "last_update_id": 164,
+  "delete_order": [],
   "favorites": [
     "BTCUSDT",
     "ETHUSDT",
