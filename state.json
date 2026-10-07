@@ -437,10 +437,17 @@
       "price": 1.42,
       "triggered": false,
       "note": "time1h"
+    },
+    "BTCUSDT_below_82000": {
+      "symbol": "BTCUSDT",
+      "direction": "below",
+      "price": 82000.0,
+      "triggered": false,
+      "note": ""
     }
   },
   "mode": null,
-  "last_update_id": 166,
+  "last_update_id": 167,
   "delete_order": [],
   "favorites": [
     "BTCUSDT",
