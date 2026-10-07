@@ -422,10 +422,16 @@
       "direction": "below",
       "price": 5.092,
       "triggered": true
+    },
+    "HBARUSDT_below_0.09096": {
+      "symbol": "HBARUSDT",
+      "direction": "below",
+      "price": 0.09096,
+      "triggered": false
     }
   },
   "mode": null,
-  "last_update_id": 158,
+  "last_update_id": 159,
   "delete_order": [],
   "favorites": [
     "BTCUSDT",
