@@ -439,7 +439,7 @@
       "symbol": "BTCUSDT",
       "direction": "below",
       "price": 83763.0,
-      "triggered": false,
+      "triggered": true,
       "note": "تست یادداشت برای ازمایش ربات"
     }
   },
