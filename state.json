@@ -435,7 +435,7 @@
       "symbol": "XRPUSDT",
       "direction": "below",
       "price": 1.42,
-      "triggered": false,
+      "triggered": true,
       "note": "time1h"
     },
     "BTCUSDT_below_82000": {
