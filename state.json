@@ -415,7 +415,7 @@
       "symbol": "HBARUSDT",
       "direction": "below",
       "price": 0.0926,
-      "triggered": false
+      "triggered": true
     },
     "BTCUSDT_below_83763": {
       "symbol": "BTCUSDT",
