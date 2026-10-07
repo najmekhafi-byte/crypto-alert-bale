@@ -263,8 +263,8 @@ def pct_distance(current, target):
 
 
 def parse_alert_command(text):
-    parts = text.strip().split()
-    if len(parts) != 2:
+    parts = text.strip().split(maxsplit=2)
+    if len(parts) < 2:
         return None
     symbol = parts[0].strip().upper()
     if not symbol.endswith("USDT"):
@@ -273,7 +273,8 @@ def parse_alert_command(text):
         price = float(parts[1].replace(",", ""))
     except ValueError:
         return None
-    return symbol, price
+    note = parts[2].strip() if len(parts) == 3 else ""
+    return symbol, price, note
 
 
 def numbered_alerts_list(state):
@@ -289,26 +290,29 @@ def numbered_alerts_list(state):
         symbol = a.get("symbol", a.get("coin", ""))
         arrow = "بالای" if a["direction"] == "above" else "زیر"
         current = prices.get(symbol)
+        note = a.get("note", "")
+        note_suffix = f" 📝{note}" if note else ""
         if current:
             dist = pct_distance(current, a["price"])
-            lines.append(f"{i}. {symbol} {arrow} {a['price']} (فاصله: {dist})")
+            lines.append(f"{i}. {symbol} {arrow} {a['price']} (فاصله: {dist}){note_suffix}")
         else:
-            lines.append(f"{i}. {symbol} {arrow} {a['price']}")
+            lines.append(f"{i}. {symbol} {arrow} {a['price']}{note_suffix}")
     return "\n".join(lines), pending_ids
 
 
-def create_alert_reply(state, symbol, target_price, current_price):
+def create_alert_reply(state, symbol, target_price, current_price, note=""):
     direction = "above" if target_price >= current_price else "below"
     alert_id = f"{symbol}_{direction}_{format_price(target_price)}"
     state["alerts"][alert_id] = {
         "symbol": symbol, "direction": direction,
-        "price": target_price, "triggered": False,
+        "price": target_price, "triggered": False, "note": note,
     }
     arrow = "بالاتر رفت از" if direction == "above" else "پایین‌تر آمد از"
     dist = pct_distance(current_price, target_price)
+    note_line = f"\n📝 {note}" if note else ""
     return (
         f"✅ آلارم ثبت شد\n{symbol}: وقتی قیمت {arrow} {format_price(target_price)} دلار\n"
-        f"(قیمت فعلی: {format_price(current_price)} — فاصله: {dist})"
+        f"(قیمت فعلی: {format_price(current_price)} — فاصله: {dist}){note_line}"
     )
 
 
@@ -322,16 +326,16 @@ def process_add_lines(state, text):
         else:
             parsed_list.append(parsed)
 
-    symbols_needed = list({symbol for symbol, _ in parsed_list})
+    symbols_needed = list({symbol for symbol, _, _ in parsed_list})
     prices = get_prices(symbols_needed)
 
     replies, any_parsed = [], False
-    for symbol, target_price in parsed_list:
+    for symbol, target_price, note in parsed_list:
         any_parsed = True
         if symbol not in prices:
             replies.append(f"❌ قیمت {symbol} پیدا نشد (ممکنه نماد پشتیبانی نشه یا موقتاً محدودیت خورده باشیم — چند دقیقه دیگه دوباره امتحان کنید).")
             continue
-        replies.append(create_alert_reply(state, symbol, target_price, prices[symbol]))
+        replies.append(create_alert_reply(state, symbol, target_price, prices[symbol], note))
 
     for line in invalid_lines:
         replies.append(f"❌ نامعتبر: {line}")
@@ -382,9 +386,11 @@ def process_commands(state):
         if text == "➕ افزودن آلارم":
             state["mode"] = "awaiting_add"
             send_bale_message(
-                "نماد ارز و قیمت رو بفرستید.\nمثال: BTCUSDT 100000\n\n"
+                "نماد ارز، قیمت، و در صورت نیاز یادداشت رو بفرستید.\n"
+                "مثال: BTCUSDT 100000\n"
+                "مثال با یادداشت: BTCUSDT 100000 شکست مقاومت هفتگی\n\n"
                 "برای چند آلارم هم‌زمان، هر کدوم رو در یک خط جدا بنویسید:\n"
-                "BTCUSDT 77000\nETHUSDT 4000"
+                "BTCUSDT 77000\nETHUSDT 4000 حمایت قوی"
             )
             continue
 
@@ -433,7 +439,7 @@ def process_commands(state):
                 state["mode"] = "awaiting_fav_price"
                 state["selected_symbol"] = text
                 send_bale_message(
-                    f"قیمت هدف برای {text} رو بفرستید:",
+                    f"قیمت هدف برای {text} رو بفرستید (می‌تونید یادداشت هم بعدش بنویسید):",
                     with_menu=False, custom_keyboard=BACK_KEYBOARD,
                 )
                 continue
@@ -480,14 +486,16 @@ def process_commands(state):
 
         if state.get("mode") == "awaiting_fav_price":
             symbol = state.get("selected_symbol")
+            price_parts = text.strip().split(maxsplit=1)
             try:
-                target_price = float(text.strip().replace(",", ""))
-            except ValueError:
+                target_price = float(price_parts[0].replace(",", ""))
+            except (ValueError, IndexError):
                 send_bale_message(
-                    "لطفاً فقط عدد قیمت رو بفرستید.",
+                    "لطفاً عدد قیمت رو بفرستید (و در صورت نیاز یادداشت بعدش).",
                     with_menu=False, custom_keyboard=BACK_KEYBOARD,
                 )
                 continue
+            note = price_parts[1].strip() if len(price_parts) == 2 else ""
             prices = get_prices([symbol])
             state["mode"] = "fav_menu"
             if symbol not in prices:
@@ -496,7 +504,7 @@ def process_commands(state):
                     with_menu=False, custom_keyboard=favorites_keyboard(state.get("favorites", [])),
                 )
                 continue
-            reply = create_alert_reply(state, symbol, target_price, prices[symbol])
+            reply = create_alert_reply(state, symbol, target_price, prices[symbol], note)
             send_bale_message(reply, with_menu=False, custom_keyboard=favorites_keyboard(state.get("favorites", [])))
             continue
 
@@ -572,7 +580,7 @@ def process_commands(state):
         state["mode"] = None
         if not any_parsed:
             send_bale_message(
-                "متوجه نشدم 🙁\nفرمت صحیح:\nنماد ارز قیمت\n\nمثال:\nBTCUSDT 100000\n\n"
+                "متوجه نشدم 🙁\nفرمت صحیح:\nنماد ارز قیمت [یادداشت اختیاری]\n\nمثال:\nBTCUSDT 100000\nBTCUSDT 100000 شکست مقاومت\n\n"
                 "برای چند آلارم هم‌زمان، هر خط یه آلارم:\nBTCUSDT 77000\nETHUSDT 4000"
             )
         else:
@@ -600,9 +608,11 @@ def check_alerts(state):
         )
         if triggered:
             arrow = "بالاتر رفت از" if direction == "above" else "پایین‌تر آمد از"
+            note = alert.get("note", "")
+            note_line = f"\n📝 {note}" if note else ""
             message = (
                 f"🔔 آلارم قیمت\nارز: {symbol}\nقیمت فعلی: {format_price(current_price)}\n"
-                f"قیمت {arrow} {format_price(target_price)}"
+                f"قیمت {arrow} {format_price(target_price)}{note_line}"
             )
             send_bale_message(message)
             send_ntfy_message(message)
