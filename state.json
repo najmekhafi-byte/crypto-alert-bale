@@ -443,9 +443,15 @@
       "note": "تست یادداشت برای ازمایش ربات"
     }
   },
-  "mode": null,
-  "last_update_id": 162,
-  "delete_order": [],
+  "mode": "awaiting_delete",
+  "last_update_id": 163,
+  "delete_order": [
+    "ZECUSDT_below_1152",
+    "XRPUSDT_below_1.44",
+    "ADAUSDT_above_0.3",
+    "HBARUSDT_below_0.09096",
+    "HBARUSDT_below_0.0926"
+  ],
   "favorites": [
     "BTCUSDT",
     "ETHUSDT",
