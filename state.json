@@ -444,10 +444,17 @@
       "price": 82000.0,
       "triggered": false,
       "note": ""
+    },
+    "TURBOUSDT_below_0.000953": {
+      "symbol": "TURBOUSDT",
+      "direction": "below",
+      "price": 0.000953,
+      "triggered": false,
+      "note": ""
     }
   },
   "mode": null,
-  "last_update_id": 167,
+  "last_update_id": 168,
   "delete_order": [],
   "favorites": [
     "BTCUSDT",
