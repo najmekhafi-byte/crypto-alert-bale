@@ -409,7 +409,7 @@
       "symbol": "HBARUSDT",
       "direction": "below",
       "price": 0.09096,
-      "triggered": false
+      "triggered": true
     },
     "HBARUSDT_below_0.0926": {
       "symbol": "HBARUSDT",
@@ -449,7 +449,7 @@
       "symbol": "TURBOUSDT",
       "direction": "below",
       "price": 0.000953,
-      "triggered": false,
+      "triggered": true,
       "note": ""
     }
   },
