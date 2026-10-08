@@ -442,7 +442,7 @@
       "symbol": "BTCUSDT",
       "direction": "below",
       "price": 82000.0,
-      "triggered": false,
+      "triggered": true,
       "note": ""
     },
     "TURBOUSDT_below_0.000953": {
