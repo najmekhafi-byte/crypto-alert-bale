@@ -465,10 +465,17 @@
       "price": 66.23,
       "triggered": false,
       "note": ""
+    },
+    "NEARUSDT_above_5.79": {
+      "symbol": "NEARUSDT",
+      "direction": "above",
+      "price": 5.79,
+      "triggered": false,
+      "note": ""
     }
   },
   "mode": null,
-  "last_update_id": 170,
+  "last_update_id": 171,
   "delete_order": [],
   "favorites": [
     "BTCUSDT",
