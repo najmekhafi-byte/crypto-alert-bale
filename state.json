@@ -458,10 +458,17 @@
       "price": 0.2639,
       "triggered": false,
       "note": ""
+    },
+    "LTCUSDT_above_66.23": {
+      "symbol": "LTCUSDT",
+      "direction": "above",
+      "price": 66.23,
+      "triggered": false,
+      "note": ""
     }
   },
   "mode": null,
-  "last_update_id": 169,
+  "last_update_id": 170,
   "delete_order": [],
   "favorites": [
     "BTCUSDT",
