@@ -470,7 +470,7 @@
       "symbol": "NEARUSDT",
       "direction": "above",
       "price": 5.79,
-      "triggered": false,
+      "triggered": true,
       "note": ""
     }
   },
