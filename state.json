@@ -472,10 +472,17 @@
       "price": 5.79,
       "triggered": true,
       "note": ""
+    },
+    "WLDUSDT_above_0.5656": {
+      "symbol": "WLDUSDT",
+      "direction": "above",
+      "price": 0.5656,
+      "triggered": false,
+      "note": ""
     }
   },
   "mode": null,
-  "last_update_id": 171,
+  "last_update_id": 172,
   "delete_order": [],
   "favorites": [
     "BTCUSDT",
