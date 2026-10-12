@@ -479,10 +479,17 @@
       "price": 0.5656,
       "triggered": false,
       "note": ""
+    },
+    "RUNEUSDT_below_0.702": {
+      "symbol": "RUNEUSDT",
+      "direction": "below",
+      "price": 0.702,
+      "triggered": false,
+      "note": ""
     }
   },
   "mode": null,
-  "last_update_id": 172,
+  "last_update_id": 173,
   "delete_order": [],
   "favorites": [
     "BTCUSDT",
