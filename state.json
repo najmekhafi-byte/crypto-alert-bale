@@ -484,7 +484,7 @@
       "symbol": "RUNEUSDT",
       "direction": "below",
       "price": 0.702,
-      "triggered": false,
+      "triggered": true,
       "note": ""
     }
   },
