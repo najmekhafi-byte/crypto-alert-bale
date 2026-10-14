@@ -486,10 +486,17 @@
       "price": 0.702,
       "triggered": true,
       "note": ""
+    },
+    "DOTUSDT_below_1.098": {
+      "symbol": "DOTUSDT",
+      "direction": "below",
+      "price": 1.098,
+      "triggered": false,
+      "note": ""
     }
   },
   "mode": null,
-  "last_update_id": 175,
+  "last_update_id": 176,
   "delete_order": [],
   "favorites": [
     "BTCUSDT",
