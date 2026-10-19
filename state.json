@@ -493,10 +493,17 @@
       "price": 1.098,
       "triggered": true,
       "note": ""
+    },
+    "TIAUSDT_below_0.5631": {
+      "symbol": "TIAUSDT",
+      "direction": "below",
+      "price": 0.5631,
+      "triggered": false,
+      "note": ""
     }
   },
   "mode": null,
-  "last_update_id": 177,
+  "last_update_id": 178,
   "delete_order": [],
   "favorites": [
     "BTCUSDT",
