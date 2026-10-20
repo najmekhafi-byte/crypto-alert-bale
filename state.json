@@ -477,7 +477,7 @@
       "symbol": "WLDUSDT",
       "direction": "above",
       "price": 0.5656,
-      "triggered": false,
+      "triggered": true,
       "note": ""
     },
     "RUNEUSDT_below_0.702": {
