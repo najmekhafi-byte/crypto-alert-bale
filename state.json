@@ -498,7 +498,7 @@
       "symbol": "TIAUSDT",
       "direction": "below",
       "price": 0.5631,
-      "triggered": false,
+      "triggered": true,
       "note": ""
     },
     "XRPUSDT_below_1.3327": {
