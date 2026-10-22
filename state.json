@@ -505,7 +505,7 @@
       "symbol": "XRPUSDT",
       "direction": "below",
       "price": 1.3327,
-      "triggered": false,
+      "triggered": true,
       "note": ""
     }
   },
